@@ -27,3 +27,40 @@ void for_each_server(void (*do)(struct fileserver *))
         do(&server_table[i]);
     }
 }
+
+// Returns file server with given id.
+struct file_server *getfs_id(ftid_t id)
+{
+    unsigned i;
+
+    for (i = 0; i < server_count; i++)
+    {
+        if (server_table[i].id == id)
+            return server_table[i];
+    }
+
+    return NULL;
+}
+
+// Returns file server from given index in table.
+struct file_server *getfs_index(unsigned index)
+{
+    if (index >= server_count)
+        return NULL;
+
+    return &server_table[i];
+}
+
+// Returns first file_server that satisfies given predicate.
+struct file_server *get_pred(short (*pred)(struct file_server))
+{
+    unsigned i;
+
+    for (i = 0; i < server_count; i++)
+    {
+        if (pred(server_table[i]))
+            return &server_table[i];
+    }
+
+    return NULL;
+}

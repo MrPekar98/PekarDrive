@@ -21,5 +21,8 @@ struct file_server
 void add_server(struct file_server server);
 void remove_server(ftid_t id);
 void for_each_server(void (*do)(struct fileserver *));
+struct file_server *getfs_id(ftid_t id);
+struct file_server *getfs_index(unsigned index);
+struct file_server *get_pred(short (*pred)(struct file_server));
 
 #endif
