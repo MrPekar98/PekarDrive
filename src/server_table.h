@@ -20,9 +20,10 @@ struct file_server
 // If one is to change a server, it must be removed and then re-added.
 void add_server(struct file_server server);
 void remove_server(ftid_t id);
-void for_each_server(void (*do)(struct fileserver *));
+void for_each_server(void (*apply)(struct file_server *));
 struct file_server *getfs_id(ftid_t id);
 struct file_server *getfs_index(unsigned index);
-struct file_server *get_pred(short (*pred)(struct file_server));
+struct file_server *getfs_pred(short (*pred)(struct file_server));
+unsigned short table_count();
 
 #endif

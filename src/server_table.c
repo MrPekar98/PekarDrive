@@ -18,13 +18,13 @@ void remove_server(ftid_t id)
 }
 
 // For-each loop of server table.
-void for_each_server(void (*do)(struct fileserver *))
+void for_each_server(void (*apply)(struct file_server *))
 {
     unsigned i;
 
     for (i = 0; i < server_count; i++)
     {
-        do(&server_table[i]);
+        apply(&server_table[i]);
     }
 }
 
@@ -36,7 +36,7 @@ struct file_server *getfs_id(ftid_t id)
     for (i = 0; i < server_count; i++)
     {
         if (server_table[i].id == id)
-            return server_table[i];
+            return &server_table[i];
     }
 
     return NULL;
@@ -48,11 +48,11 @@ struct file_server *getfs_index(unsigned index)
     if (index >= server_count)
         return NULL;
 
-    return &server_table[i];
+    return &server_table[index];
 }
 
 // Returns first file_server that satisfies given predicate.
-struct file_server *get_pred(short (*pred)(struct file_server))
+struct file_server *getfs_pred(short (*pred)(struct file_server))
 {
     unsigned i;
 
@@ -63,4 +63,10 @@ struct file_server *get_pred(short (*pred)(struct file_server))
     }
 
     return NULL;
+}
+
+// Returns count of tables.
+unsigned short table_count()
+{
+    return server_count;
 }
