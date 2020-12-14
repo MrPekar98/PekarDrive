@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "fs/fs.h"
-#include "comm.h"
+#include <comm.h>
 #include "server_table.h"
 #include <stdlib.h>
 #include <sys/socket.h>
