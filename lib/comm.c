@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <netinet/in.h>
 
@@ -22,7 +23,7 @@ conn client_init(const char *host, unsigned short port)
     conn client;
 
     if ((client.fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        return ERR_CONN("Failed initialising socket."m ERR_MSG_LEN);
+        return ERR_CONN("Failed initialising socket.", ERR_MSG_LEN);
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
