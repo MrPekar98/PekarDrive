@@ -1,23 +1,23 @@
 CC=gcc
-SRC=src/server.c
-SLAVESRC = slave/src/
+WORKER_SRC=src/server.c
+MASTER_SRC=src/master.c
 SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c
 IN := lib/comm.c src/fs/fs.c src/server_table.c
 INCLUDE := lib
-CFLAGS=-DDEBUG
+CFLAGS=-DDEBUG $(foreach include, $(INCLUDE), -I$(include)) -lpthread
 
 .PHONY: all test clean
 
-master: $(SRC) $(foreach i, $(IN), $(i)) ; \
-    $(CC) -o master $(SRC) $(foreach inc, $(INCLUDE), -I$(inc)) $(foreach i, $(IN), $(i)) $(CFLAGS)
+master: $(MASTER_SRC) $(foreach i, $(IN), $(i)) ; \
+    $(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 
-slave: $(SLAVESRC) $(foreach i, $(SLAVEIN), $(i)) ; \
-    $(CC) -o slave $(SLAVESRC) $(foreach i, $(SLAVEIN), $(i)) $(CLAGS)
+worker: $(WORKER_SRC) $(foreach i, $(IN), $(i)) ; \
+    $(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 
 test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
     $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach inc, $(INCLUDE), -I$(inc)) \
         $(foreach i, $(IN), $(i)) && ./a.out && rm a.out)
 
 clean: ; \
-    rm master slave
+    rm master worker
