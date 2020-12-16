@@ -31,7 +31,7 @@ int main()
         if (client.error)
         {
 #ifdef LOG
-            printf("Client connection refused.\n");
+            printf("Client connection refused: %s\n", client.error_msg);
 #endif
             continue;
         }
