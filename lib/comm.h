@@ -11,7 +11,7 @@ typedef struct
     unsigned long max_bytes;
 } conn;
 
-// TODO: Missing initializer function.
+conn client_init(const char *host, unsigned short port);
 conn conn_listen(int server_fd);
 ssize_t conn_write(conn connection, const void *buffer, size_t len);
 ssize_t conn_read(conn connection, void *buffer, size_t len);

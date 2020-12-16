@@ -15,6 +15,27 @@
     c; \
 })
 
+// Initializer for client.
+conn client_init(const char *host, unsigned short port)
+{
+    struct sockaddr_in server_addr;
+    conn client;
+
+    if ((client.fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        return ERR_CONN("Failed initialising socket."m ERR_MSG_LEN);
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port);
+
+    if (inet_pton(AF_INET, host, &server_addr.sin_addr) <= 0)
+        return ERR_CONN("Invalid address or address not supported.", ERR_MSG_LEN);
+
+    else if (connect(client.fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
+        return ERR_CONN("Connection failed.", ERR_MSG_LEN);
+
+    return client;
+}
+
 // Listens for client trying to connect.
 conn conn_listen(int server_fd)
 {
@@ -28,7 +49,7 @@ conn conn_listen(int server_fd)
     conn connection;
 
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
-        return ERR_CONN("Failes setting socket option.", ERR_MSG_LEN);
+        return ERR_CONN("Failed setting socket option.", ERR_MSG_LEN);
 
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
