@@ -5,7 +5,7 @@ SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c
 IN := lib/comm.c src/fs/fs.c src/server_table.c
 INCLUDE := lib
-CFLAGS=-DDEBUG $(foreach include, $(INCLUDE), -I$(include)) -lpthread
+CFLAGS=-DDEBUG -DLOG $(foreach include, $(INCLUDE), -I$(include)) -lpthread
 
 .PHONY: all test clean
 
