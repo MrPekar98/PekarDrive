@@ -15,7 +15,7 @@ int main()
     add_servers();
 
     test_add_servers();
-    //test_remove_servers();
+    test_remove_servers();
     test_get_id();
     test_get_index();
     test_get_predicate();
@@ -45,16 +45,17 @@ void test_add_servers()
 // Tests removing servers.
 void test_remove_servers()
 {
-        assert(table_count() == 3);
+    assert(table_count() == 3);
 
-        remove_server(1);
-        assert(table_count() == 2);
+    remove_server(1);
+    assert(table_count() == 2);
 
-        remove_server(3);
-        assert(table_count() == 1);
+    remove_server(3);
+    assert(table_count() == 1);
 
-        remove_server(2);
-        assert(table_count() == 0);
+    remove_server(2);
+    assert(table_count() == 0);
+    add_servers();
 }
 
 // Tests getting server by id.
