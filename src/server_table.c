@@ -4,6 +4,9 @@
 static struct file_server *server_table = NULL;
 static unsigned short server_count = 0;
 
+// Prototypes.
+static inline int indexof(ftid_t id);
+
 // Adds server to table.
 void add_server(struct file_server server)
 {
@@ -14,7 +17,31 @@ void add_server(struct file_server server)
 // Removed file server from table.
 void remove_server(ftid_t id)
 {
+    int file_server_idx = indexof(id);
 
+    if (file_server_idx < 0)
+        return;
+
+    for (; file_server_idx + 1 < server_count; file_server_idx++)
+    {
+        server_table[file_server_idx] = server_table[file_server_idx + 1];
+    }
+
+    server_table = (struct file_server *) realloc(server_table, sizeof(struct file_server) * --server_count);
+}
+
+// Finds index of file server with given ID.
+static inline int indexof(ftid_t id)
+{
+    unsigned i;
+
+    for (i = 0; i < server_count; i++)
+    {
+        if (server_table[i].id == id)
+            return i;
+    }
+
+    return -1;
 }
 
 // For-each loop of server table.
