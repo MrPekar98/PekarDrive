@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "fs/fs.h"
+#include "../fs/fs.h"
 #include <comm.h>
-#include "server_table.h"
+#include "../server_table.h"
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/socket.h>
