@@ -1,5 +1,5 @@
 CC=gcc
-WORKER_SRC=src/server.c
+WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c
