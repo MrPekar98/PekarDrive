@@ -67,9 +67,14 @@ void *handle_client(void *arg)
     if (p.msg_type == PING)
         conn_write(client, p_encode(p_init(0, "1", PING)), 13);
 
+    else if (p.msg_type == LS)
+    {
+
+    }
+
     else
     {
-        struct file_output output = f_exec(p.msg_type == READ ? FILE_READ | FILE_WRITE, p.arg, p.msg_len);
+        struct file_output output = f_exec(p.msg_type == READ ? FILE_READ : FILE_WRITE, p.arg, p.msg_len);
         conn_write(client, p_encode(p_init(p.seq_number + 1, (char *) output.out, p.msg_type)), output.len);
     }
 
