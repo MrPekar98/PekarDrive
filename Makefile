@@ -1,9 +1,10 @@
 CC=gcc
+CLIENT_SRC=src/client.c
 WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c
-IN := lib/comm.c lib/packet.c src/fs/fs.c src/server_table.c src/server/file_exec.c
+IN := lib/comm.c lib/packet.c lib/interface.c src/fs/fs.c src/server_table.c src/server/file_exec.c
 INCLUDE := lib
 CFLAGS=-DDEBUG -DLOG $(foreach include, $(INCLUDE), -I$(include)) -lpthread
 
@@ -15,9 +16,12 @@ master: $(MASTER_SRC) $(foreach i, $(IN), $(i)) ; \
 worker: $(WORKER_SRC) $(foreach i, $(IN), $(i)) ; \
     $(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 
+client: $(CLIENT_SRC) $(foreach i, $(IN), $(i)) ; \
+    $(CC) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+
 test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
     $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach inc, $(INCLUDE), -I$(inc)) \
         $(foreach i, $(IN), $(i)) && ./a.out && rm a.out)
 
 clean: ; \
-    rm master worker
+    rm master worker pekar
