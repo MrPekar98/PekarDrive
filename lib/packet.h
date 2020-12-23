@@ -10,6 +10,7 @@ struct packet
     enum type
     {
         PING,
+        LS,
         WRITE,
         READ
     } msg_type;
