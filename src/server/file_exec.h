@@ -1,6 +1,8 @@
 #ifndef FILE_EXEC_H
 #define FILE_EXEC_H
 
+#include <stddef.h>
+
 #define FILE_READ 1
 #define FILE_WRITE 2
 
