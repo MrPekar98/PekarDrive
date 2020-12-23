@@ -3,7 +3,7 @@ WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c
-IN := lib/comm.c lib/packet.c src/fs/fs.c src/server_table.c
+IN := lib/comm.c lib/packet.c src/fs/fs.c src/server_table.c src/server/file_exec.c
 INCLUDE := lib
 CFLAGS=-DDEBUG -DLOG $(foreach include, $(INCLUDE), -I$(include)) -lpthread
 
