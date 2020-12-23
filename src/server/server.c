@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/socket.h>
+#include <packet.h>
+
+#define READ_SIZE 500
 
 void *handle_client(void *arg);
 
@@ -46,7 +49,32 @@ int main()
 void *handle_client(void *arg)
 {
     conn client = *((conn *) arg);
+    void *buffer = malloc(READ_SIZE);
+    ssize_t bytes = conn_read(client, buffer, READ_SIZE);
 
+    if (bytes <= 0)
+    {
+#ifdef LOG
+        printf("Error reading client.\n");
+#endif
+        free(buffer);
+        pthread_exit(NULL);
+        return NULL;
+    }
+
+    struct packet p = p_decode(buffer);
+
+    if (p.msg_type == PING)
+        conn_write(client, p_encode(p_init(0, "1", PING)), 13);
+
+    else
+    {
+        struct file_output output = f_exec(p.msg_type == READ ? FILE_READ | FILE_WRITE, p.arg, p.msg_len);
+        conn_write(client, p_encode(p_init(p.seq_number + 1, (char *) output.out, p.msg_type)), output.len);
+    }
+
+    conn_close(&client);
+    free(buffer);
     pthread_exit(NULL);
     return NULL;
 }
