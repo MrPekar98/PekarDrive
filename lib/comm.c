@@ -47,7 +47,7 @@ conn conn_listen(int server_fd)
     struct sockaddr_in addr;
     size_t addr_len = sizeof(addr);
     int opt = 1;
-    conn connection;
+    conn connection = {.error = 0};
 
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
         return ERR_CONN("Failed setting socket option.", ERR_MSG_LEN);
