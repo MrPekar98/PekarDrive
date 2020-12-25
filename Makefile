@@ -21,10 +21,10 @@ master: $(MASTER_SRC) $(foreach i, $(IN), $(i)) ; \
     $(MASTER_BUILD)
 
 worker: $(WORKER_SRC) $(foreach i, $(IN), $(i)) ; \
-    $(WORKER_BUILD) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+    $(WORKER_BUILD)
 
 client: $(CLIENT_SRC) $(foreach i, $(IN), $(i)) ; \
-    $(CLIENT_BUILD) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+    $(CLIENT_BUILD)
 
 test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
     $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach inc, $(INCLUDE), -I$(inc)) \
