@@ -8,16 +8,23 @@ IN := lib/comm.c lib/packet.c lib/interface.c src/fs/fs.c src/server_table.c src
 INCLUDE := lib
 CFLAGS=-DDEBUG -DLOG $(foreach include, $(INCLUDE), -I$(include)) -lpthread
 
+MASTER_BUILD=$(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+WORKER_BUILD=$(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+CLIENT_BUILD=$(CC) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+
 .PHONY: all test clean
 
+all: $(MASTER_SRC) $(WORKER_SRC) $(CLIENT_SRC) $(foreach i, $(IN), $(i)) ; \
+    $(MASTER_BUILD) && $(WORKER_BUILD) && $(CLIENT_BUILD)
+
 master: $(MASTER_SRC) $(foreach i, $(IN), $(i)) ; \
-    $(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+    $(MASTER_BUILD)
 
 worker: $(WORKER_SRC) $(foreach i, $(IN), $(i)) ; \
-    $(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+    $(WORKER_BUILD) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 
 client: $(CLIENT_SRC) $(foreach i, $(IN), $(i)) ; \
-    $(CC) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+    $(CLIENT_BUILD) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 
 test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
     $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach inc, $(INCLUDE), -I$(inc)) \
