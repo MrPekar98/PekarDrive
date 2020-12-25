@@ -6,16 +6,16 @@
 #include <pthread.h>
 #include <sys/socket.h>
 #include <packet.h>
+#include <string.h>
+#include "file_exec.h"
 
 #define READ_SIZE 500
 
 void *handle_client(void *arg);
+static const char *file_list_to_str(struct file_list fl);
 
 int main()
 {
-    // TODO: Implement locking so that no two clients access the same file at once. No shared locks.
-    // TODO: Add to /lib/ a packet format file that specifies message format. This must be included in interface.h.
-
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (!server_fd)
@@ -36,10 +36,15 @@ int main()
 #ifdef LOG
             printf("Client connection refused: %s\n", client.error_msg);
 #endif
+            conn_close(&client);
             continue;
         }
 
+#ifdef THREADING
         pthread_create(&thread, NULL, handle_client, &client);
+#else
+        handle_client(&client);
+#endif
     }
 
     return 0;
@@ -65,11 +70,12 @@ void *handle_client(void *arg)
     struct packet p = p_decode(buffer);
 
     if (p.msg_type == PING)
-        conn_write(client, p_encode(p_init(0, "1", PING)), 13);
+        conn_write(client, p_encode(p_init(p.seq_number + 1, "1", PING)), 13);
 
     else if (p.msg_type == LS)
     {
-
+        const char *ls_output = file_list_to_str(file_list());
+        conn_write(client, p_encode(p_init(p.seq_number + 1, ls_output, LS)), strlen(ls_output));
     }
 
     else
@@ -80,6 +86,33 @@ void *handle_client(void *arg)
 
     conn_close(&client);
     free(buffer);
+#ifdef THREADING
     pthread_exit(NULL);
+#endif
+
     return NULL;
+}
+
+// Converts array of string into single string when new-line separator.
+static const char *file_list_to_str(struct file_list fl)
+{
+    if (fl.count == 0)
+        return "";
+
+    char *files = "";
+    unsigned i;
+
+    for (i = 0; i < fl.count; i++)
+    {
+        files = realloc(files, strlen(files) + 1 + strlen(fl.file_names[i]));
+        strcat(files, fl.file_names[i]);
+
+        if (i == fl.count - 1)
+            strcat(files, "\0");
+
+        else
+            strcat(files, "\n");
+    }
+
+    return files;
 }
