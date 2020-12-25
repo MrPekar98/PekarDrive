@@ -20,3 +20,11 @@ struct file_output f_exec(short op, const void *arg, size_t len)
 
     pthread_mutex_unlock(&mutex);
 }
+
+// Returns a list of files names.
+struct file_list file_list()
+{
+    pthread_mutex_lock(&mutex);
+
+    pthread_mutex_unlock(&mutex);
+}
