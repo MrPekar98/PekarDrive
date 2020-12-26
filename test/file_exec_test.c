@@ -11,8 +11,8 @@ void test_file_append();
 
 int main()
 {
-    test_file_list();
-    test_file_read();
+    //test_file_list();
+    //test_file_read();
     test_file_write();
     test_file_append();
 
@@ -28,11 +28,11 @@ void test_file_list()
 
     struct file_list ls = file_list();
     assert(ls.count == 3);
-    assert(strcmp(file_names[0], "file1") == 0);
-    assert(strcmp(file_names[1], "file2") == 0);
-    assert(strcmp(file_names[2], "file3") == 0);
+    assert(strcmp(ls.file_names[0], "file1") == 0);
+    assert(strcmp(ls.file_names[1], "file2") == 0);
+    assert(strcmp(ls.file_names[2], "file3") == 0);
 
-    syste("rm file1 file2 file3");
+    system("rm file1 file2 file3");
 }
 
 // Tests reading file.
@@ -41,7 +41,7 @@ void test_file_read()
     system("touch file");
     system("echo Hello, World. > file");
 
-    struct file_output fo = f_exec(FILE_READ, NULL, 0);
+    struct file_output fo = f_exec(FILE_READ, NULL);
     assert(strcmp((char *) fo.out, "Hello, World") == 0);
 
     system("rm file");
@@ -50,11 +50,11 @@ void test_file_read()
 // Tests writing new file.
 void test_file_write()
 {
-    struct file_output fo = file_exec(FILE_WRITE, "file#Hello, World", 12);
-    char *file_str = malloc(13);
+    struct file_output fo = f_exec(FILE_WRITE, "file#Hello, World");
+    char *file_str = malloc(20);
     FILE *f = fopen("file", "r");
 
-    fscanf(f, "A-Z a-z,", fiel_str);
+    fscanf(f, "A-Z a-z,", file_str);
     assert(strcmp(file_str, "Hello, World") == 0);
     fclose(f);
     free(file_str);
@@ -64,10 +64,7 @@ void test_file_write()
 // Tests appending to a file.
 void test_file_append()
 {
-    system("touch file");
-    system("echo Hello, > file");
-
-    struct file_output fo = file_exec(FILE_APPEND, "file# World", 6);
+    struct file_output fo = f_exec(FILE_APPEND, "file#Hello, World");
     char *file_str = malloc(13);
     FILE *f = fopen("file", "r");
 
