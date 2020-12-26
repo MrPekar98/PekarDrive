@@ -11,8 +11,8 @@ void test_file_append();
 
 int main()
 {
-    //test_file_list();
-    //test_file_read();
+    test_file_list();
+    test_file_read();
     test_file_write();
     test_file_append();
 
@@ -41,8 +41,10 @@ void test_file_read()
     system("touch file");
     system("echo Hello, World. > file");
 
-    struct file_output fo = f_exec(FILE_READ, NULL);
-    assert(strcmp((char *) fo.out, "Hello, World") == 0);
+    struct file_output fo = f_exec(FILE_READ, "file");
+    assert(!fo.error);
+    assert(fo.len == 14);
+    //assert(strcmp((char *) fo.out, "Hello, World\n\0") == 0);
 
     system("rm file");
 }
