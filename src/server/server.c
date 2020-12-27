@@ -45,6 +45,9 @@ int main()
 #else
         handle_client(&client);
 #endif
+
+        if (1)
+            return 0;
     }
 
     return 0;
@@ -63,11 +66,14 @@ void *handle_client(void *arg)
         printf("Error reading client.\n");
 #endif
         free(buffer);
+        conn_close(&client);
+#ifdef THREADING
         pthread_exit(NULL);
+#endif
         return NULL;
     }
 
-    struct packet p = p_decode(buffer);
+    struct packet p = p_decode(buffer);     // TODO: Add error field to packet to let master know.
 
     if (p.msg_type == PING)
         conn_write(client, p_encode(p_init(p.seq_number + 1, "1", PING)), 13);
@@ -78,9 +84,15 @@ void *handle_client(void *arg)
         conn_write(client, p_encode(p_init(p.seq_number + 1, ls_output, LS)), strlen(ls_output));
     }
 
+    else if (p.msg_type == APPEND)
+    {
+        struct file_output output = f_exec(FILE_APPEND, p.arg);
+        conn_write(client, p_encode(p_init(p.seq_number + 1, (char *) output.out, p.msg_type)), output.len);
+    }
+
     else
     {
-        struct file_output output = f_exec(p.msg_type == READ ? FILE_READ : FILE_WRITE, p.arg, p.msg_len);
+        struct file_output output = f_exec(p.msg_type == READ ? FILE_READ : FILE_WRITE, p.arg);
         conn_write(client, p_encode(p_init(p.seq_number + 1, (char *) output.out, p.msg_type)), output.len);
     }
 
@@ -99,7 +111,7 @@ static const char *file_list_to_str(struct file_list fl)
     if (fl.count == 0)
         return "";
 
-    char *files = "";
+    char *files = malloc(1);
     unsigned i;
 
     for (i = 0; i < fl.count; i++)
