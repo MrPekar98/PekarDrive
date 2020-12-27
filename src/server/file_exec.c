@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <stddef.h>
 
 #define SEP '#'
 
@@ -60,7 +61,7 @@ static struct file_output read_file(const char *file_name)
 {
     int byte;
     unsigned count = 0, growth_iter = 1;
-    const unsigned grow = 3;
+    const unsigned grow = 100;
     struct file_output output = {.len = 0, .out = malloc(grow)};
     FILE *f = fopen(file_name, "r");
 
@@ -73,7 +74,7 @@ static struct file_output read_file(const char *file_name)
 
     while ((byte = fgetc(f)) != EOF)
     {
-        if (count + 1 == grow)
+        if (count + 1 == grow * growth_iter)
             output.out = realloc(output.out, grow * ++growth_iter);
 
         memcpy(output.out + count++, &byte, sizeof(char));
@@ -89,8 +90,10 @@ static struct file_output read_file(const char *file_name)
 static struct file_output write_file(const char *file_name, const void *buffer)
 {
     FILE *f = fopen(file_name, "w");
-    fwrite(buffer, sizeof(char), strlen((char *) buffer), f);
+    size_t bytes = fwrite(buffer, sizeof(char), strlen((char *) buffer), f);
     fclose(f);
+
+    return (struct file_output) {.error = 0, .out = &bytes, .len = sizeof(size_t)};
 }
 
 // Appends buffer to existing file.
@@ -98,8 +101,10 @@ static struct file_output write_file(const char *file_name, const void *buffer)
 static struct file_output append_file(const char *file_name, const void *buffer)
 {
     FILE *f = fopen(file_name, "a");
-    fwrite(buffer, sizeof(char), strlen((char *) buffer), f);
+    size_t bytes = fwrite(buffer, sizeof(char), strlen((char *) buffer), f);
     fclose(f);
+
+    return (struct file_output) {.error = 0, .out = &bytes, .len = sizeof(size_t)};
 }
 
 // Returns a list of files names.
