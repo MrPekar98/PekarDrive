@@ -12,7 +12,8 @@ struct packet
         PING,
         LS,
         WRITE,
-        READ
+        READ,
+        APPEND
     } msg_type;
 };
 
