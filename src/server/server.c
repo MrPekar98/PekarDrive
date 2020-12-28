@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <sys/socket.h>
 #include <packet.h>
+#include <unistd.h>
 #include <string.h>
 #include "file_exec.h"
 
@@ -37,6 +38,8 @@ int main()
             printf("Client connection refused: %s\n", client.error_msg);
 #endif
             conn_close(&client);
+            close(server_fd);
+            server_fd = socket(AF_INET, SOCK_STREAM, 0);
             continue;
         }
 
@@ -45,9 +48,6 @@ int main()
 #else
         handle_client(&client);
 #endif
-
-        if (1)
-            return 0;
     }
 
     return 0;
