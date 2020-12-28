@@ -36,3 +36,9 @@ struct packet p_decode(const void *p)
 
     return res;
 }
+
+// Cleans up heap memory.
+void p_cleanup(struct packet p)
+{
+    free(p.arg);
+}

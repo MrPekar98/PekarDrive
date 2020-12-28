@@ -96,6 +96,7 @@ void *handle_client(void *arg)
         conn_write(client, p_encode(p_init(p.seq_number + 1, (char *) output.out, p.msg_type)), output.len);
     }
 
+    p_cleanup(p);
     conn_close(&client);
     free(buffer);
 #ifdef THREADING

@@ -20,5 +20,6 @@ struct packet
 const void *p_encode(struct packet p);
 struct packet p_decode(const void *p);
 struct packet p_init(unsigned seq_number, const char *arg, enum type t);
+void p_cleanup(struct packet p);
 
 #endif
