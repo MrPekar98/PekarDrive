@@ -6,7 +6,7 @@
 struct packet p_init(unsigned seq_number, const char *arg, enum type msg_type)
 {
     struct packet p = {.seq_number = seq_number, .arg = malloc(strlen(arg) + 1),
-                        .msg_len = strlen(arg), .msg_type = msg_type};
+                        .msg_len = strlen(arg), .msg_type = msg_type, .error = 0};
     strcpy(p.arg, arg);
     return p;
 }
@@ -18,7 +18,8 @@ const void *p_encode(struct packet p)
     memcpy(buffer, &p.seq_number, sizeof(unsigned));
     memcpy(buffer + sizeof(unsigned), &p.msg_len, sizeof(unsigned));
     memcpy(buffer + sizeof(int) * 2, &p.msg_type, sizeof(int));
-    memcpy(buffer + sizeof(int) * 3, p.arg, p.msg_len);
+    memcpy(buffer + sizeof(int) * 3, &p.error, sizeof(short));
+    memcpy(buffer + sizeof(int) * 3 + sizeof(short), p.arg, p.msg_len);
 
     return buffer;
 }
@@ -30,9 +31,10 @@ struct packet p_decode(const void *p)
     memcpy(&res.seq_number, p, sizeof(unsigned));
     memcpy(&res.msg_len, p + sizeof(unsigned), sizeof(unsigned));
     memcpy(&res.msg_type, p + sizeof(unsigned) * 2, sizeof(unsigned));
+    memcpy(&res.error, p + sizeof(unsigned) * 3, sizeof(short));
 
     res.arg = malloc(res.msg_len);
-    memcpy(res.arg, p + sizeof(unsigned) * 3, res.msg_len);
+    memcpy(res.arg, p + sizeof(unsigned) * 3 + sizeof(short), res.msg_len);
 
     return res;
 }
@@ -41,4 +43,13 @@ struct packet p_decode(const void *p)
 void p_cleanup(struct packet p)
 {
     free(p.arg);
+}
+
+// Error packet.
+struct packet p_error(unsigned seq_number, const char *arg, enum type t)
+{
+    struct packet p = {.seq_number = seq_number, .arg = malloc(strlen(arg) + 1),
+                        .msg_len = strlen(arg), .msg_type = t, .error = 1};
+    strcpy(p.arg, arg);
+    return p;
 }
