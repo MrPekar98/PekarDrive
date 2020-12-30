@@ -13,7 +13,8 @@
 #define READ_SIZE 500
 
 void *handle_client(void *arg);
-static const char *file_list_to_str(struct file_list fl);
+void answer_client(conn client, unsigned seq_number, enum type msg_type, struct file_output output);
+const char *file_list_to_str(struct file_list fl);
 
 int main()
 {
@@ -87,13 +88,13 @@ void *handle_client(void *arg)
     else if (p.msg_type == APPEND)
     {
         struct file_output output = f_exec(FILE_APPEND, p.arg);
-        conn_write(client, p_encode(p_init(p.seq_number + 1, (char *) output.out, p.msg_type)), output.len);
+        answer_client(client, p.seq_number + 1, p.msg_type, output);
     }
 
     else
     {
         struct file_output output = f_exec(p.msg_type == READ ? FILE_READ : FILE_WRITE, p.arg);
-        conn_write(client, p_encode(p_init(p.seq_number + 1, (char *) output.out, p.msg_type)), output.len);
+        answer_client(client, p.seq_number + 1, p.msg_type, output);
     }
 
     p_cleanup(p);
@@ -106,8 +107,30 @@ void *handle_client(void *arg)
     return NULL;
 }
 
+// Answers client depending on file output.
+void answer_client(conn client, unsigned seq_number, enum type msg_type, struct file_output output)
+{
+    if (output.error)
+    {
+        if (msg_type == WRITE)
+            conn_write(client, p_encode(p_error(seq_number, "Write error", msg_type)), sizeof(struct packet) + 12);
+
+        else if (msg_type == READ)
+            conn_write(client, p_encode(p_error(seq_number, "Read error", msg_type)), sizeof(struct packet) + 11);
+
+        else if (msg_type == APPEND)
+            conn_write(client, p_encode(p_error(seq_number, "Append error", msg_type)), sizeof(struct packet) + 13);
+
+        else
+            conn_write(client, p_encode(p_error(seq_number, "Error", msg_type)), sizeof(struct packet) + 6);
+    }
+
+    else
+        conn_write(client, p_encode(p_init(seq_number, (char *) output.out, msg_type)), output.len);
+}
+
 // Converts array of string into single string when new-line separator.
-static const char *file_list_to_str(struct file_list fl)
+const char *file_list_to_str(struct file_list fl)
 {
     if (fl.count == 0)
         return "";
