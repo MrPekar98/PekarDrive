@@ -11,13 +11,17 @@
 #include "file_exec.h"
 
 #define READ_SIZE 500
+#define MASTER_ADDR "127.0.0.1"
+#define MASTER_PORT 45654
 
+void register_worker();
 void *handle_client(void *arg);
 void answer_client(conn client, unsigned seq_number, enum type msg_type, struct file_output output);
 const char *file_list_to_str(struct file_list fl);
 
 int main()
 {
+    register_worker();
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (!server_fd)
@@ -52,6 +56,25 @@ int main()
     }
 
     return 0;
+}
+
+// Registers worker at master.
+void register_worker()
+{
+    conn_client worker = client_init(MASTER_ADDR, MASTER_PORT);
+    unsigned bytes = 0;
+    char *msg = malloc(21);
+    sprintf(msg, "%s;%d", machine_ip(), get_port());
+
+    while ((bytes = conn_write(worker, p_encode(p_init(0, msg, REGISTER)), 40)) <= 0);
+    free(msg);
+    conn_close(worker);
+}
+
+// Returns IP address of this machine.
+const char *machine_ip()
+{
+    return "127.0.0.1";
 }
 
 // Client handler.
