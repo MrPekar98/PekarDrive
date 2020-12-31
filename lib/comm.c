@@ -16,6 +16,12 @@
     c; \
 })
 
+// Returns port.
+unsigned short get_port()
+{
+    return PORT;
+}
+
 // Initializer for client.
 conn client_init(const char *host, unsigned short port)
 {

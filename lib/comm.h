@@ -11,6 +11,7 @@ typedef struct
     unsigned long max_bytes;
 } conn;
 
+unsigned short get_port();
 conn client_init(const char *host, unsigned short port);
 conn conn_listen(int server_fd);
 ssize_t conn_write(conn connection, const void *buffer, size_t len);
