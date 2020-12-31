@@ -2,6 +2,7 @@
 #define WORKER_ADMIN_H
 
 #include <pthread.h>
+#include "server_table.h"
 
 void set_admin_update_time(unsigned time);
 unsigned get_admin_update_time();

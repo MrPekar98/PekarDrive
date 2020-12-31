@@ -30,7 +30,7 @@ void add_worker(struct file_server worker)
 pthread_t start_admin()
 {
     pthread_t thread;
-    pthread_create(thread, NULL, manager_thread, NULL);
+    pthread_create(&thread, NULL, manager_thread, NULL);
 
     return thread;
 }
