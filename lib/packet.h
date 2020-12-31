@@ -14,7 +14,8 @@ struct packet
         LS,
         WRITE,
         READ,
-        APPEND
+        APPEND,
+        REGISTER
     } msg_type;
 };
 
