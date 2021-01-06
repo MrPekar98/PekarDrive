@@ -24,7 +24,7 @@ worker: $(WORKER_SRC) $(foreach i, $(IN), $(i)) ; \
     $(WORKER_BUILD)
 
 client: $(CLIENT_SRC) $(foreach i, $(IN), $(i)) ; \
-    $(CLIENT_BUILD)
+    $(CLIENT_BUILD) && mkdir bin && mv pekar bin
 
 test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
     $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach inc, $(INCLUDE), -I$(inc)) \
