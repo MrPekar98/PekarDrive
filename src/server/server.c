@@ -12,7 +12,7 @@
 
 #define READ_SIZE 10000
 #define MASTER_ADDR "127.0.0.1"
-#define MASTER_PORT 45654
+#define MASTER_PORT get_port()
 
 void register_worker();
 const char *machine_ip();
