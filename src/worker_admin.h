@@ -10,5 +10,7 @@ pthread_t start_admin();
 void add_worker(struct file_server worker);
 
 // TODO: Add functions that manages all communication with workers.
+unsigned short worker_count();
+char *worker_ls(unsigned index);
 
 #endif

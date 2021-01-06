@@ -1,6 +1,13 @@
 #include "worker_admin.h"
-#include "server_table.h"
 #include <time.h>
+#include <stdlib.h>
+#include <comm.h>
+#include <packet.h>
+
+#define WORKER_READ_LEN 5000
+#define WORKER_WRITE_LEN 100
+
+#define PACKET(arg, type) p_encode(p_init(0, arg, type))
 
 static unsigned update_time = 60;   // Seconds between pinging workers.
 
@@ -59,4 +66,37 @@ static void ping_all()
     {
 
     }
+}
+
+// Returns count of worker nodes.
+unsigned short worker_count()
+{
+    return table_count();
+}
+
+// Executes ls on worker node found by index.
+char *worker_ls(unsigned index)
+{
+    struct file_server *worker = getfs_index(index);
+    conn client = client_init(worker->location.ip, worker->location.port);
+    void *buffer = malloc(WORKER_READ_LEN);
+
+    if (buffer == NULL)
+        return NULL;
+
+    else if (conn_write(client, PACKET("", LS), WORKER_WRITE_LEN) <= 0)
+    {
+        free(buffer);
+        return NULL;
+    }
+
+    else if (conn_read(client, buffer, WORKER_READ_LEN) <= 0)
+    {
+        free(buffer);
+        return NULL;
+    }
+
+    struct packet p = p_decode(buffer);
+    free(buffer);
+    return p.arg;
 }
