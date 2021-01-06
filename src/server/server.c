@@ -10,7 +10,7 @@
 #include <string.h>
 #include "file_exec.h"
 
-#define READ_SIZE 500
+#define READ_SIZE 10000
 #define MASTER_ADDR "127.0.0.1"
 #define MASTER_PORT 45654
 
