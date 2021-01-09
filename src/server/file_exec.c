@@ -17,6 +17,7 @@ static const void *buffer(const void *ptr);
 static struct file_output read_file(const char *file_name);
 static struct file_output write_file(const char *file_name, const void *buffer);
 static struct file_output append_file(const char *file_name, const void *buffer);
+static struct file_output delete_file(const char *file_name);
 
 // Entrypoint for handling file operations.
 // For write and append, arg has '#' as separator between filename and text to write.
@@ -32,6 +33,9 @@ struct file_output f_exec(short op, const void *arg)
 
     if (op & FILE_APPEND)
         return append_file(file_name(arg), buffer(arg));
+
+    if (op & FILE_DELETE)
+        return delete_file(arg);
 
     pthread_mutex_unlock(&mutex);
 }
@@ -102,4 +106,11 @@ struct file_list file_list()
 
     pthread_mutex_unlock(&mutex);
     return list;
+}
+
+// Deletes file.
+static struct file_output delete_file(const char *file_name)
+{
+    fs_delete_file(file_name);
+    return (struct file_output) {.error = 0, .out = NULL, .len = 0};
 }

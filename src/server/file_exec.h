@@ -4,6 +4,7 @@
 #define FILE_READ 1
 #define FILE_WRITE 2
 #define FILE_APPEND 4
+#define FILE_DELETE 8
 
 struct file_output
 {

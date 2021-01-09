@@ -22,7 +22,7 @@ const char *file_list_to_str(struct file_list fl);
 
 int main()
 {
-    register_worker();
+    //register_worker();
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (!server_fd)
@@ -109,15 +109,33 @@ void *handle_client(void *arg)
         conn_write(client, p_encode(p_init(p.seq_number + 1, ls_output, LS)), strlen(ls_output));
     }
 
-    else if (p.msg_type == APPEND)
-    {
-        struct file_output output = f_exec(FILE_APPEND, p.arg);
-        answer_client(client, p.seq_number + 1, p.msg_type, output);
-    }
-
     else
     {
-        struct file_output output = f_exec(p.msg_type == READ ? FILE_READ : FILE_WRITE, p.arg);
+        short op;
+
+        switch (p.msg_type)
+        {
+            case READ:
+                op = FILE_READ;
+                break;
+
+            case WRITE:
+                op = FILE_WRITE;
+                break;
+
+            case APPEND:
+                op = FILE_APPEND;
+                break;
+
+            case DELETE:
+                op = FILE_DELETE;
+                break;
+
+            default:
+                answer_client(client, p.seq_number + 1, -1, (struct file_output) {.error = 1});
+        }
+
+        struct file_output output = f_exec(op, p.arg);
         answer_client(client, p.seq_number + 1, p.msg_type, output);
     }
 
