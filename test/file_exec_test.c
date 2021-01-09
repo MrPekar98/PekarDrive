@@ -53,6 +53,9 @@ void test_file_write()
     char *file_str = malloc(20);
     FILE *f = fopen("file", "r");
 
+    if (f == NULL)
+        return;
+
     fscanf(f, "A-Z a-z,", file_str);
     assert(strcmp(file_str, "Hello, World") == 0);
     fclose(f);
