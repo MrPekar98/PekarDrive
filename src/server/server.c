@@ -22,7 +22,7 @@ const char *file_list_to_str(struct file_list fl);
 
 int main()
 {
-    //register_worker();
+    register_worker();
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (!server_fd)
