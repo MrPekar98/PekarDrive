@@ -15,7 +15,8 @@ struct packet
         WRITE,
         READ,
         APPEND,
-        REGISTER
+        REGISTER,
+        DELETE
     } msg_type;
 };
 
