@@ -1,4 +1,5 @@
 #include "file_exec.h"
+#include "../fs/fs.h"
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
@@ -59,29 +60,11 @@ static const void *buffer(const void *ptr)
 // Reads file.
 static struct file_output read_file(const char *file_name)
 {
-    int byte;
-    unsigned count = 0, growth_iter = 1;
-    const unsigned grow = 100;
-    struct file_output output = {.len = 0, .out = malloc(grow)};
-    FILE *f = fopen(file_name, "r");
+    void *read = fs_read_file(file_name);
+    unsigned read_len = strlen((char *) read);
+    struct file_output output = {.len = read_len, .out = malloc(read_len + 1), .error = 0};
+    memcpy(output.out, read, read_len);
 
-    if (f == NULL)
-    {
-        output.error = 1;
-        free(output.out);
-        return output;
-    }
-
-    while ((byte = fgetc(f)) != EOF)
-    {
-        if (count + 1 == grow * growth_iter)
-            output.out = realloc(output.out, grow * ++growth_iter);
-
-        memcpy(output.out + count++, &byte, sizeof(char));
-        output.len++;
-    }
-
-    fclose(f);
     return output;
 }
 
@@ -89,22 +72,16 @@ static struct file_output read_file(const char *file_name)
 // Old file with same name is overwritten.
 static struct file_output write_file(const char *file_name, const void *buffer)
 {
-    FILE *f = fopen(file_name, "w");
-    size_t bytes = fwrite(buffer, sizeof(char), strlen((char *) buffer), f);
-    fclose(f);
-
-    return (struct file_output) {.error = 0, .out = &bytes, .len = sizeof(size_t)};
+    long bytes = fs_write_file(file_name, buffer, strlen((char *) buffer), 0);
+    return (struct file_output) {.error = 0, .out = &bytes, .len = sizeof(long)};
 }
 
 // Appends buffer to existing file.
 // If does not exist, create new.
 static struct file_output append_file(const char *file_name, const void *buffer)
 {
-    FILE *f = fopen(file_name, "a");
-    size_t bytes = fwrite(buffer, sizeof(char), strlen((char *) buffer), f);
-    fclose(f);
-
-    return (struct file_output) {.error = 0, .out = &bytes, .len = sizeof(size_t)};
+    long bytes = fs_write_file(file_name, buffer, strlen((char *) buffer), 1);
+    return (struct file_output) {.error = 0, .out = &bytes, .len = sizeof(long)};
 }
 
 // Returns a list of files names.
