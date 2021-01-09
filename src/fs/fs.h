@@ -6,10 +6,10 @@ extern "C"
 {
 #endif
 
-short create_file(const char *file);
-void delete_file(const char *file);
-long write_file(const char *file, void *buffer, unsigned long size, short isappend);
-void *read_file(const char *file);
+short fs_create_file(const char *file);
+void fs_delete_file(const char *file);
+long fs_write_file(const char *file, void *buffer, unsigned long size, short isappend);
+void *fs_read_file(const char *file);
 
 #ifdef __cplusplus
 }

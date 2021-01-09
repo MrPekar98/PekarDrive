@@ -5,10 +5,10 @@
 #define READ_SIZE 100
 
 // Prototypes.
-short file_exists(const char *file);
+static short file_exists(const char *file);
 
 // Creates a new file if it doesn't already exist.
-short create_file(const char *file)
+short fs_create_file(const char *file)
 {
     FILE *f = fopen(file, "w");
     short ret = f != NULL;
@@ -20,7 +20,7 @@ short create_file(const char *file)
 }
 
 // Deletes a file if it exists.
-void delete_file(const char *file)
+void fs_delete_file(const char *file)
 {
     if (file == NULL || !file_exists(file))
         return;
@@ -32,7 +32,7 @@ void delete_file(const char *file)
 }
 
 // Writes to file.
-long write_file(const char *file, void *buffer, unsigned long size, short isappend)
+long fs_write_file(const char *file, void *buffer, unsigned long size, short isappend)
 {
     if (file == NULL || !file_exists(file))
         return -1;
@@ -45,7 +45,7 @@ long write_file(const char *file, void *buffer, unsigned long size, short isappe
 }
 
 // Reads all content in file.
-void *read_file(const char *file)
+void *fs_read_file(const char *file)
 {
     FILE *f = fopen(file, "r");
     char *buffer = malloc(READ_SIZE);
@@ -64,7 +64,7 @@ void *read_file(const char *file)
 }
 
 // Checks whether a given file exists.
-short file_exists(const char *file)
+static short file_exists(const char *file)
 {
     FILE *f = fopen(file, "r");
 
