@@ -32,10 +32,13 @@ void fs_delete_file(const char *file)
 }
 
 // Writes to file.
-long fs_write_file(const char *file, void *buffer, unsigned long size, short isappend)
+long fs_write_file(const char *file, const void *buffer, unsigned long size, short isappend)
 {
-    if (file == NULL || !file_exists(file))
+    if (file == NULL || (isappend && !file_exists(file)))
         return -1;
+
+    else if (!file_exists(file))
+        fs_create_file(file);
 
     FILE *f = fopen(file, isappend ? "a" : "w");
     unsigned long written = fprintf(f, "%s", (char *) buffer);
