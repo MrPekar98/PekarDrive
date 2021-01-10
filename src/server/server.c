@@ -14,6 +14,8 @@
 #define MASTER_ADDR "127.0.0.1"
 #define MASTER_PORT get_port()
 
+#define WORKER_TKN 1    // Temporary token.
+
 void register_worker();
 const char *machine_ip();
 void *handle_client(void *arg);
@@ -155,16 +157,16 @@ void answer_client(conn client, unsigned seq_number, enum type msg_type, struct 
     if (output.error)
     {
         if (msg_type == WRITE)
-            conn_write(client, p_encode(p_error(seq_number, "Write error", msg_type)), sizeof(struct packet) + 12);
+            conn_write(client, p_encode(p_error(seq_number, "Write error", msg_type, WORKER_TKN)), sizeof(struct packet) + 12);
 
         else if (msg_type == READ)
-            conn_write(client, p_encode(p_error(seq_number, "Read error", msg_type)), sizeof(struct packet) + 11);
+            conn_write(client, p_encode(p_error(seq_number, "Read error", msg_type, WORKER_TKN)), sizeof(struct packet) + 11);
 
         else if (msg_type == APPEND)
-            conn_write(client, p_encode(p_error(seq_number, "Append error", msg_type)), sizeof(struct packet) + 13);
+            conn_write(client, p_encode(p_error(seq_number, "Append error", msg_type, WORKER_TKN)), sizeof(struct packet) + 13);
 
         else
-            conn_write(client, p_encode(p_error(seq_number, "Error", msg_type)), sizeof(struct packet) + 6);
+            conn_write(client, p_encode(p_error(seq_number, "Error", msg_type, WORKER_TKN)), sizeof(struct packet) + 6);
     }
 
     else
