@@ -70,6 +70,15 @@ void handle_client(conn client)
 
     if (p.msg_type == REGISTER)
     {
+        if (p.token != WORKER_TKN)
+        {
+#ifdef LOG
+            printf("Non-worker attempted to register.\n");
+#endif
+            free(buffer);
+            return;
+        }
+
         struct file_server worker = {.id = worker_id++, .location.ip = malloc(16), .location.port = get_port()};
         strncpy(worker.location.ip, p.arg, char_at(p.arg, ';') - 1);
         add_worker(worker);
@@ -89,6 +98,7 @@ void handle_client(conn client)
 }
 
 // TODO: Add remaining message type handlers.
+// TODO: Attach master token to messages. Check reply for containing worker token.
 // Handles message type.
 const char *handle_request(enum type msg_type, const char *arg)
 {

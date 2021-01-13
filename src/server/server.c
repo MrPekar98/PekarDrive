@@ -14,12 +14,11 @@
 #define MASTER_ADDR "127.0.0.1"
 #define MASTER_PORT get_port()
 
-#define WORKER_TKN 1    // Temporary token.
-
 void register_worker();
 const char *machine_ip();
 void *handle_client(void *arg);
 void answer_client(conn client, unsigned seq_number, enum type msg_type, struct file_output output);
+static inline struct packet create_packet(unsigned seq_number, enum type msg_type, const char *arg);
 const char *file_list_to_str(struct file_list fl);
 
 int main()
@@ -69,7 +68,10 @@ void register_worker()
     char *msg = malloc(21);
     sprintf(msg, "%s;%d", machine_ip(), get_port());
 
-    while ((bytes = conn_write(worker, p_encode(p_init(0, msg, REGISTER)), 40)) <= 0);
+    struct packet p = p_init(0, msg, REGISTER);
+    attach_token(WORKER_TKN, &p);
+
+    while ((bytes = conn_write(worker, p_encode(p), 40)) <= 0);
     free(msg);
     conn_close(&worker);
 }
@@ -102,7 +104,21 @@ void *handle_client(void *arg)
 
     struct packet p = p_decode(buffer);     // TODO: Add error field to packet to let master know.
 
-    if (p.msg_type == PING)
+    if (p.token != MASTER_TKN)
+    {
+#ifdef LOG
+        printf("Message not from client.\n");
+#endif
+        free(buffer);
+        p_cleanup(p);
+        conn_close(&client);
+#ifdef THREADING
+        pthread_exit(NULL);
+#endif
+        return NULL;
+    }
+
+    else if (p.msg_type == PING)
         conn_write(client, p_encode(p_init(p.seq_number + 1, "1", PING)), 13);
 
     else if (p.msg_type == LS)
@@ -154,23 +170,35 @@ void *handle_client(void *arg)
 // Answers client depending on file output.
 void answer_client(conn client, unsigned seq_number, enum type msg_type, struct file_output output)
 {
+    struct packet p;
+
     if (output.error)
     {
         if (msg_type == WRITE)
-            conn_write(client, p_encode(p_error(seq_number, "Write error", msg_type, WORKER_TKN)), sizeof(struct packet) + 12);
+            p = p_error(seq_number, "Write error", msg_type, WORKER_TKN);
 
         else if (msg_type == READ)
-            conn_write(client, p_encode(p_error(seq_number, "Read error", msg_type, WORKER_TKN)), sizeof(struct packet) + 11);
+            p = p_error(seq_number, "Read error", msg_type, WORKER_TKN);
 
         else if (msg_type == APPEND)
-            conn_write(client, p_encode(p_error(seq_number, "Append error", msg_type, WORKER_TKN)), sizeof(struct packet) + 13);
+            p = p_error(seq_number, "Append error", msg_type, WORKER_TKN);
 
         else
-            conn_write(client, p_encode(p_error(seq_number, "Error", msg_type, WORKER_TKN)), sizeof(struct packet) + 6);
+            p = p_error(seq_number, "Error", msg_type, WORKER_TKN);
     }
 
     else
-        conn_write(client, p_encode(p_init(seq_number, (char *) output.out, msg_type)), output.len);
+        p = create_packet(seq_number, msg_type, (char *) output.out);
+
+    conn_write(client, p_encode(p), output.len);
+}
+
+// Creates packet instance.
+static inline struct packet create_packet(unsigned seq_number, enum type msg_type, const char *arg)
+{
+    struct packet p = p_init(seq_number, arg, msg_type);
+    attach_token(WORKER_TKN, &p);
+    return p;
 }
 
 // Converts array of string into single string when new-line separator.
