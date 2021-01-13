@@ -6,7 +6,8 @@ SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c
 IN := lib/comm.c lib/packet.c lib/interface.c src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c
 INCLUDE := lib
-CFLAGS=-DDEBUG -DLOG $(foreach include, $(INCLUDE), -I$(include)) -lpthread
+MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
+CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread
 
 MASTER_BUILD=$(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 WORKER_BUILD=$(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
