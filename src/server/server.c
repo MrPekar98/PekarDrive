@@ -119,7 +119,12 @@ void *handle_client(void *arg)
     }
 
     else if (p.msg_type == PING)
+    {
         conn_write(client, p_encode(p_init(p.seq_number + 1, "1", PING)), 13);
+#ifdef LOG
+        printf("PING!\n");
+#endif
+    }
 
     else if (p.msg_type == LS)
     {

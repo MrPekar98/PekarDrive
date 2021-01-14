@@ -1,5 +1,6 @@
 #include "worker_admin.h"
 #include <time.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <comm.h>
 #include <packet.h>
@@ -12,7 +13,8 @@
 static unsigned update_time = 60;   // Seconds between pinging workers.
 
 static void *manager_thread(void *arg);
-static void ping_all();
+static void ping_server(struct file_server *server);
+static void handle_ping_response(conn worker);
 
 // Sers update time for pinging workers.
 void set_admin_update_time(unsigned time)
@@ -45,27 +47,51 @@ pthread_t start_admin()
 // Thread for managing workers.
 static void *manager_thread(void *arg)
 {
+    time_t start = time(NULL);
+
     while (1)
     {
-        time_t start = time(NULL);
         while (time(NULL) - start < update_time);
 
         start = time(NULL);
-        ping_all();
+        for_each_server(ping_server);
     }
 }
 
-
-// TODO: What to do on failure?
-// Sends ping to all workers.
-static void ping_all()
+// Pings a file server,
+static void ping_server(struct file_server *server)
 {
-    unsigned i, count = table_count();
+#ifdef LOG
+    printf("Ping to %d.\n", server->id);
+#endif
 
-    for (i = 0; i < count; i++)
+    conn worker = client_init(server->location.ip, server->location.port);
+    struct packet p = p_init(0, "", PING);
+    attach_token(MASTER_TKN, &p);
+    conn_write(worker, p_encode(p), sizeof(struct packet) + 10);
+    handle_ping_response(worker);
+}
+
+// TODO: Handle failure.
+// Handles ping response.
+static void handle_ping_response(conn worker)
+{
+    void *buffer = malloc(sizeof(struct packet) + 10);
+    int bytes = conn_read(worker, buffer, sizeof(struct packet) + 10);
+    free(buffer);
+
+    if (bytes <= 0)
     {
 
+#ifdef LOG
+        printf("Worker (file descriptor: %d) has failed.\n", worker.fd);
+#endif
     }
+
+#ifdef LOG
+    else
+        printf("Successful response from worker (file descriptor: %d).\n", worker.fd);
+#endif
 }
 
 // Returns count of worker nodes.
