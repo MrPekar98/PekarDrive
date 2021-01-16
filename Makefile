@@ -4,7 +4,7 @@ WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c
-IN := lib/comm.c lib/packet.c lib/interface.c src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c
+IN := lib/comm.c lib/packet.c lib/interface.c src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c
 INCLUDE := lib
 MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
 CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread

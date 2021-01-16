@@ -1,9 +1,11 @@
 #include "worker_admin.h"
+#include "balance.h"
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <comm.h>
 #include <packet.h>
+#include <string.h>
 
 #define WORKER_READ_LEN 5000
 #define WORKER_WRITE_LEN 100
@@ -106,11 +108,13 @@ char *worker_ls(unsigned index)
     struct file_server *worker = getfs_index(index);
     conn client = client_init(worker->location.ip, worker->location.port);
     void *buffer = malloc(WORKER_READ_LEN);
+    struct packet p = p_init(0, "", LS);
+    attach_token(MASTER_TKN, &p);
 
     if (buffer == NULL)
         return NULL;
 
-    else if (conn_write(client, PACKET("", LS), WORKER_WRITE_LEN) <= 0)
+    else if (conn_write(client, p_encode(p), WORKER_WRITE_LEN) <= 0)
     {
         free(buffer);
         return NULL;
@@ -122,7 +126,55 @@ char *worker_ls(unsigned index)
         return NULL;
     }
 
-    struct packet p = p_decode(buffer);
+    struct packet p_response = p_decode(buffer);
     free(buffer);
-    return p.arg;
+    return p_response.arg;
+}
+
+// TODO: Finish this.
+// Writes new file to worker that has least load.
+long worker_write(const char *file, const void *data)
+{
+    struct file_server *fs = least_load();
+
+    if (fs == NULL)
+    {
+#ifdef LOG
+        printf("No workers registrered.\n");
+#endif
+        return -1;
+    }
+
+    char *buffer = malloc(strlen(file) + strlen((char *) data) + 10);
+    sprintf(buffer, "%s#%s\0", file, (char *) data);
+    struct packet p = p_init(0, buffer, WRITE);
+    attach_token(MASTER_TKN, &p);
+
+    conn worker = client_init(fs->location.ip, fs->location.port);
+    long bytes = conn_write(worker, p_encode(p), WORKER_WRITE_LEN + strlen((char *) data));
+    conn_close(&worker);
+    free(buffer);
+
+    return bytes;
+}
+
+// TODO: finish this.
+// Appends data to file at first worker found that has given file name.
+long worker_append(const char *file, const void *data)
+{
+    return -1;
+}
+
+// TODO: Finish this.
+// Reads all data from file.
+void *worker_read(const char *file)
+{
+    return NULL;
+}
+
+// TODO: Finish this.
+// Deletes file from first found worker with that file.
+void worker_delete(const char *file)
+{
+
 }
