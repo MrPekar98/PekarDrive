@@ -15,6 +15,7 @@
 void server_restart(conn *client, int *fd);
 void handle_client(conn client);
 const char *handle_request(enum type msg_type, const char *arg);
+short service_unavailable(conn client);
 unsigned char_at(const char *str, char c);
 
 // Stores information about workers.
@@ -57,6 +58,9 @@ void server_restart(conn *client, int *fd)
 // Handler for incoming messages by client.
 void handle_client(conn client)
 {
+    if (!service_unavailable(client))
+        return;
+
     static unsigned worker_id = 1;
     void *buffer = malloc(500);
 
@@ -95,6 +99,18 @@ void handle_client(conn client)
     }
 
     free(buffer);
+}
+
+// Checks service for being available.
+// Tells client if service is unavailable.
+short service_unavailable(conn client)
+{
+    if (!worker_count())
+    {
+        // Tell client service is unavailable.
+    }
+
+    return 1;
 }
 
 // TODO: Add remaining message type handlers.
