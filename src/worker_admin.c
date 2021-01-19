@@ -17,6 +17,8 @@ static unsigned update_time = 60;   // Seconds between pinging workers.
 static void *manager_thread(void *arg);
 static void ping_server(struct file_server *server);
 static void handle_ping_response(conn worker);
+static struct file_server *find_by_file(const char *file);
+static char *worker_ls_index(unsigned index);
 
 // Sers update time for pinging workers.
 void set_admin_update_time(unsigned time)
@@ -102,8 +104,25 @@ unsigned short worker_count()
     return table_count();
 }
 
-// Executes ls on worker node found by index.
-char *worker_ls(unsigned index)
+// TODO: Test if working when reading, deleting and appending.
+// Finds worker with given file name.
+static struct file_server *find_by_file(const char *file)
+{
+    unsigned i, workers = worker_count();
+
+    for (i = 0; i < workers; i++)
+    {
+        char *ls = worker_ls_index(i);
+
+        if (strstr(ls, file) != NULL)
+            return getfs_index(i);
+    }
+
+    return NULL;
+}
+
+// Executes LS given worker index.
+static char *worker_ls_index(unsigned index)
 {
     struct file_server *worker = getfs_index(index);
     conn client = client_init(worker->location.ip, worker->location.port);
@@ -131,7 +150,24 @@ char *worker_ls(unsigned index)
     return p_response.arg;
 }
 
-// TODO: Finish this.
+// Executes ls on worker node found by index.
+char *worker_ls()
+{
+    unsigned i, workers = worker_count();
+    char *result = malloc(1);
+    printf("Worker count: %d\n", workers);
+
+    for (i = 0; i < workers; i++)
+    {
+        char *ls = worker_ls_index(i);
+        result = realloc(result, strlen(ls) + 1);
+        sprintf(result, "%s%s%s", result, i != 0 ? "\n" : "", ls);
+    }
+
+    sprintf(result, "%s\0", result);
+    return result;
+}
+
 // Writes new file to worker that has least load.
 long worker_write(const char *file, const void *data)
 {
