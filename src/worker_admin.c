@@ -155,7 +155,6 @@ char *worker_ls()
 {
     unsigned i, workers = worker_count();
     char *result = malloc(1);
-    printf("Worker count: %d\n", workers);
 
     for (i = 0; i < workers; i++)
     {
