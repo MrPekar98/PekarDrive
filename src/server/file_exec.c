@@ -89,11 +89,11 @@ static struct file_output append_file(const char *file_name, const void *buffer)
 }
 
 // Returns a list of files names.
-struct file_list file_list()
+struct file_list file_list(const char *dir)
 {
     pthread_mutex_lock(&mutex);
 
-    DIR *directory = opendir("./");
+    DIR *directory = opendir(dir);
     struct file_list list = {.count = 0};
     struct dirent *d;
 

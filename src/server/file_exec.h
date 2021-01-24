@@ -20,6 +20,6 @@ struct file_list
 };
 
 struct file_output f_exec(short op, const void *arg);
-struct file_list file_list();
+struct file_list file_list(const char *dir);
 
 #endif
