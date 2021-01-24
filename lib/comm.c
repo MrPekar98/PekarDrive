@@ -16,6 +16,21 @@
     c; \
 })
 
+// Returns IP.
+const char *get_ip()
+{
+#ifdef DEBUG
+    return "127.0.0.1";
+#else
+    FILE *prog = popen("hostname -I", "r");
+    char *host = malloc(16);
+    fscanf(prog, "%[0-9.]", host);
+    fclose(prog);
+
+    return host;
+#endif
+}
+
 // Returns port.
 unsigned short get_port()
 {
