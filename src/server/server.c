@@ -79,7 +79,7 @@ void register_worker()
 // Returns IP address of this machine.
 const char *machine_ip()
 {
-    return "127.0.0.1";
+    return get_ip();
 }
 
 // Client handler.
