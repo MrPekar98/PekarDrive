@@ -17,6 +17,8 @@ void handle_client(conn client);
 const char *handle_request(enum type msg_type, const char *arg);
 short service_unavailable(conn client);
 unsigned char_at(const char *str, char c);
+const char *exec_str(enum type msg_type, const char *arg);
+const char *exec_long(enum type msg_type, const char *arg);
 
 // Stores information about workers.
 // Load balances workload based in worker information in server table.
@@ -58,9 +60,6 @@ void server_restart(conn *client, int *fd)
 // Handler for incoming messages by client.
 void handle_client(conn client)
 {
-    if (!service_unavailable(client))
-        return;
-
     static unsigned worker_id = 1;
     void *buffer = malloc(500);
 
@@ -72,7 +71,13 @@ void handle_client(conn client)
 
     struct packet p = p_decode(buffer);
 
-    if (p.msg_type == REGISTER)
+    if (p.msg_type != REGISTER && !service_unavailable(client))
+    {
+        free(buffer);
+        return;
+    }
+
+    else if (p.msg_type == REGISTER)
     {
         if (p.token != WORKER_TKN)
         {
@@ -107,18 +112,54 @@ short service_unavailable(conn client)
 {
     if (!worker_count())
     {
-        // Tell client service is unavailable.
+        conn_write(client, "Service unavailable.", 21);
+        return 0;
     }
 
     return 1;
 }
 
-// TODO: Add remaining message type handlers.
-// TODO: Attach master token to messages. Check reply for containing worker token.
 // Handles message type.
 const char *handle_request(enum type msg_type, const char *arg)
 {
-    return "Hello!";
+    switch (msg_type)
+    {
+        case LS: case READ:
+            return exec_str(msg_type, arg);
+
+        case WRITE: case APPEND:
+            return exec_long(msg_type, arg);
+
+        case DELETE:
+            worker_delete(arg);
+            return "1";
+
+        default:
+            return "Server error.";
+    }
+}
+
+// For operators that return string.
+const char *exec_str(enum type msg_type, const char *arg)
+{
+    switch (msg_type)
+    {
+        case LS:
+            return worker_ls();
+
+        case READ:
+            return (char *) worker_read(arg);
+
+        default:
+            return "Server error.";
+    }
+}
+
+// TODO: Finish this!
+// For operators that return long.
+const char *exec_long(enum type msg_type, const char *arg)
+{
+
 }
 
 // Returns index at first occurence of char in string.
