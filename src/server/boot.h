@@ -6,5 +6,6 @@
 #define MASTER_PORT get_port()
 
 void boot();
+void terminate();
 
 #endif
