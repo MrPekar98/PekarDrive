@@ -19,6 +19,7 @@ short service_unavailable(conn client);
 unsigned char_at(const char *str, char c);
 const char *exec_str(enum type msg_type, const char *arg);
 const char *exec_long(enum type msg_type, const char *arg);
+const char *long2str(long val);
 
 // Stores information about workers.
 // Load balances workload based in worker information in server table.
@@ -155,11 +156,25 @@ const char *exec_str(enum type msg_type, const char *arg)
     }
 }
 
-// TODO: Finish this!
 // For operators that return long.
 const char *exec_long(enum type msg_type, const char *arg)
 {
+    char *file = malloc(strlen(arg));
+    char *data = malloc(strlen(arg));
+    strncpy(file, arg, char_at(arg, ';') - 1);
+    strcpy(data, arg + strlen(file) + 1);
 
+    switch (msg_type)
+    {
+        case WRITE:
+            return long2str(worker_write(file, data));
+
+        case APPEND:
+            return long2str(worker_append(file, data));
+
+        default:
+            return "Server error.";
+    }
 }
 
 // Returns index at first occurence of char in string.
@@ -168,4 +183,12 @@ unsigned char_at(const char *str, char c)
     unsigned index = 0;
     while (str[index++] != c);
     return index;
+}
+
+// Converts long to string.
+const char *long2str(long val)
+{
+    char *strval = malloc(10);
+    sprintf(strval, "%ld, val");
+    return strval;
 }
