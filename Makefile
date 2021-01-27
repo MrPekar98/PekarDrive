@@ -1,5 +1,5 @@
 CC=gcc
-CLIENT_SRC=src/client.c
+CLIENT_SRC=src/client/client.c src/client/arg_parser.c
 WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
@@ -32,4 +32,4 @@ test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
         $(foreach i, $(IN), $(i)) && ./a.out && rm a.out)
 
 clean: ; \
-    rm master worker pekar
+    rm -rf master worker bin
