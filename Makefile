@@ -11,7 +11,7 @@ CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread
 
 MASTER_BUILD=$(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 WORKER_BUILD=$(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
-CLIENT_BUILD=$(CC) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
+CLIENT_BUILD=$(CC) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS) && mkdir bin && mv pekar bin
 
 .PHONY: all test clean
 
@@ -25,7 +25,7 @@ worker: $(WORKER_SRC) $(foreach i, $(IN), $(i)) ; \
     $(WORKER_BUILD)
 
 client: $(CLIENT_SRC) $(foreach i, $(IN), $(i)) ; \
-    $(CLIENT_BUILD) && mkdir bin && mv pekar bin
+    $(CLIENT_BUILD)
 
 test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
     $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach inc, $(INCLUDE), -I$(inc)) \
