@@ -181,7 +181,7 @@ long worker_write(const char *file, const void *data)
     }
 
     char *buffer = malloc(strlen(file) + strlen((char *) data) + 10);
-    sprintf(buffer, "%s#%s\0", file, (char *) data);
+    sprintf(buffer, "%s;%s\0", file, (char *) data);
     struct packet p = p_init(0, buffer, WRITE);
     attach_token(MASTER_TKN, &p);
 
