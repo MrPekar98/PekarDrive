@@ -80,9 +80,7 @@ void exec_write_append(const char *file, const char *data, short isappend)
 #endif
 
     size_t bytes = file_write(file, data, strlen(data), isappend, MASTER_ADDR, MASTER_PORT);
-
-    if (res != NULL)
-        printf("Wrote %d bytes\n", bytes);
+    printf("Wrote %d bytes\n", bytes);
 }
 
 // Executes 'delete'.
@@ -93,7 +91,5 @@ void exec_delete(const char *file)
 #endif
 
     short deleted = file_delete(file, MASTER_ADDR, MASTER_PORT);
-
-    if (res != NULL)
-        printf("File was %s.\n", deleted ? "deleted" : "not deleted");
+    printf("File was %s.\n", deleted ? "deleted" : "not deleted");
 }
