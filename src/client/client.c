@@ -79,10 +79,10 @@ void exec_write_append(const char *file, const char *data, short isappend)
     printf("Executing '%s'...\n", isappend ? "append" : "write");
 #endif
 
-    const void *res = file_write(file, data, strlen(data), isappend, MASTER_ADDR, MASTER_PORT);
+    size_t bytes = file_write(file, data, strlen(data), isappend, MASTER_ADDR, MASTER_PORT);
 
     if (res != NULL)
-        printf("%s\n", res);
+        printf("Wrote %d bytes\n", bytes);
 }
 
 // Executes 'delete'.
@@ -92,8 +92,8 @@ void exec_delete(const char *file)
     printf("Executing 'delete'...\n");
 #endif
 
-    const void *res = file_delete(file, MASTER_ADDR, MASTER_PORT);
+    short deleted = file_delete(file, MASTER_ADDR, MASTER_PORT);
 
     if (res != NULL)
-        printf("%s\n", res);
+        printf("File was %s.\n", deleted ? "deleted" : "not deleted");
 }
