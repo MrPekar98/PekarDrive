@@ -16,7 +16,7 @@ static unsigned update_time = 60;   // Seconds between pinging workers.
 
 static void *manager_thread(void *arg);
 static void ping_server(struct file_server *server);
-static void handle_ping_response(conn worker, struct file_Server worker_server);
+static void handle_ping_response(conn worker, struct file_server worker_server);
 static struct file_server *find_by_file(const char *file);
 static char *worker_ls_index(unsigned index);
 
@@ -78,7 +78,7 @@ static void ping_server(struct file_server *server)
 
 // Handles ping response.
 // Worker is deleted from local table if worker is not responding properly.
-static void handle_ping_response(conn worker, struct file_Server worker_server)
+static void handle_ping_response(conn worker, struct file_server worker_server)
 {
     void *buffer = malloc(sizeof(struct packet) + 10);
     int bytes = conn_read(worker, buffer, sizeof(struct packet) + 10);
