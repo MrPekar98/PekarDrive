@@ -6,6 +6,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <stddef.h>
+#include <errno.h>
 
 #define SEP ';'
 
@@ -98,6 +99,15 @@ struct file_list file_list(const char *dir)
     DIR *directory = opendir(dir);
     struct file_list list = {.count = 0};
     struct dirent *d;
+
+    if (directory == NULL)
+    {
+#ifdef LOG
+        perror("Directory ~/.pekar_worker could not be opened");
+#endif
+        pthread_mutex_unlock(&mutex);
+        return list;
+    }
 
     while ((d = readdir(directory)) != NULL)
     {
