@@ -82,7 +82,6 @@ static void handle_ping_response(conn worker, struct file_server worker_server)
 {
     void *buffer = malloc(sizeof(struct packet) + 10);
     int bytes = conn_read(worker, buffer, sizeof(struct packet) + 10);
-    free(buffer);
 
     if (bytes <= 0)
     {
@@ -169,6 +168,10 @@ char *worker_ls()
     for (i = 0; i < workers; i++)
     {
         char *ls = worker_ls_index(i);
+
+        if (ls == NULL)
+            continue;
+
         result = realloc(result, strlen(ls) + 1);
         sprintf(result, "%s%s%s", result, i != 0 ? "\n" : "", ls);
     }
