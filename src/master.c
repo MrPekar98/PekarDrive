@@ -16,6 +16,8 @@ void server_restart(conn *client, int *fd);
 void handle_client(conn client);
 const char *handle_request(enum type msg_type, const char *arg);
 short service_unavailable(conn client);
+const char *parse_ip(const char *str);
+unsigned short parse_port(const char *str);
 unsigned char_at(const char *str, char c);
 const char *exec_str(enum type msg_type, const char *arg);
 const char *exec_long(enum type msg_type, const char *arg);
@@ -89,8 +91,8 @@ void handle_client(conn client)
             return;
         }
 
-        struct file_server worker = {.id = worker_id++, .location.ip = malloc(16), .location.port = get_port()};
-        strncpy(worker.location.ip, p.arg, char_at(p.arg, ';') - 1);
+        struct file_server worker = {.id = worker_id++, .location.ip = malloc(16), .location.port = parse_port(p.arg)};
+        strcpy(worker.location.ip, parse_ip(p.arg));
         add_worker(worker);
 
 #ifdef LOG
@@ -118,6 +120,20 @@ short service_unavailable(conn client)
     }
 
     return 1;
+}
+
+// Parses semicolon seperated string into IP address.
+const char *parse_ip(const char *str)
+{
+    char *ip = malloc(strlen(str));
+    strncpy(ip, str, char_at(str, ';') - 1);
+    return ip;
+}
+
+// Parses semicolon seperared string into port number.
+unsigned short parse_port(const char *str)
+{
+    return atoi(str + char_at(str, ';') + 1);
 }
 
 // Handles message type.
