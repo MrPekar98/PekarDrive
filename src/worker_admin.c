@@ -66,7 +66,7 @@ static void *manager_thread(void *arg)
 static void ping_server(struct file_server *server)
 {
 #ifdef LOG
-    printf("Ping to %d.\n", server->id);
+    printf("Ping to %d (%s:%d).\n", server->id, server->location.ip, server->location.port);
 #endif
 
     conn worker = client_init(server->location.ip, server->location.port);
