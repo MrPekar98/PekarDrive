@@ -37,7 +37,7 @@ static void register_worker()
     conn worker = client_init(MASTER_ADDR, MASTER_PORT);
     unsigned bytes = 0;
     char *msg = malloc(21);
-    sprintf(msg, "%s;%d", get_ip(), get_ip());
+    sprintf(msg, "%s;%d", get_ip(), get_port());
 
     struct packet p = p_init(0, msg, REGISTER);
     attach_token(WORKER_TKN, &p);
