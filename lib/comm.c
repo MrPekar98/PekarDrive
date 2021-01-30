@@ -9,6 +9,8 @@
 #define ERR_MSG_LEN 50
 #define PORT 55443
 
+#define READ_TIMEOUT 4
+
 // Returns error conn instance with error message.
 #define ERR_CONN(msg, len) ({ \
     conn c = {.error = 1, .error_msg = malloc(len)}; \
@@ -42,9 +44,14 @@ conn client_init(const char *host, unsigned short port)
 {
     struct sockaddr_in server_addr;
     conn client;
+    struct timeval timeout = {.tv_sec = READ_TIMEOUT, .tv_usec = 0};
 
     if ((client.fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         return ERR_CONN("Failed initialising socket.", ERR_MSG_LEN);
+
+    else if (setsockopt(client.fd, SOL_SOCKET, SO_RCVTIMEO, (char *) &timeout, sizeof(timeout)) < 0 ||
+                setsockopt(client.fd, SOL_SOCKET, SO_SNDTIMEO, (char *) &timeout, sizeof(timeout)) < 0)
+        return ERR_CONN("Failed setting socket option.", ERR_MSG_LEN);
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
