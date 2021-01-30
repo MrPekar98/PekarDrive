@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <comm.h>
 #include <packet.h>
-#include "../server_table.h"
 #include <pthread.h>
 #include <sys/socket.h>
 #include <unistd.h>
