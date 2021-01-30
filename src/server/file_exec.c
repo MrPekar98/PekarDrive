@@ -7,7 +7,7 @@
 #include <dirent.h>
 #include <stddef.h>
 
-#define SEP '#'
+#define SEP ';'
 
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -23,21 +23,23 @@ static struct file_output delete_file(const char *file_name);
 // For write and append, arg has '#' as separator between filename and text to write.
 struct file_output f_exec(short op, const void *arg)
 {
+    struct file_output output;
     pthread_mutex_lock(&mutex);
 
     if (op & FILE_READ)
-        return read_file(arg);
+        output = read_file(arg);
 
     if (op & FILE_WRITE)
-        return write_file(file_name(arg), buffer(arg));
+        output = write_file(file_name(arg), buffer(arg));
 
     if (op & FILE_APPEND)
-        return append_file(file_name(arg), buffer(arg));
+        output = append_file(file_name(arg), buffer(arg));
 
     if (op & FILE_DELETE)
-        return delete_file(arg);
+        output = delete_file(arg);
 
     pthread_mutex_unlock(&mutex);
+    return output;
 }
 
 // Exctacts file_name from string format.
