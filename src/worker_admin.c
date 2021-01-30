@@ -16,7 +16,7 @@ static unsigned update_time = 60;   // Seconds between pinging workers.
 
 static void *manager_thread(void *arg);
 static void ping_server(struct file_server *server);
-static void handle_ping_response(conn worker);
+static void handle_ping_response(conn worker, struct file_Server worker_server);
 static struct file_server *find_by_file(const char *file);
 static char *worker_ls_index(unsigned index);
 
@@ -73,12 +73,12 @@ static void ping_server(struct file_server *server)
     struct packet p = p_init(0, "", PING);
     attach_token(MASTER_TKN, &p);
     conn_write(worker, p_encode(p), sizeof(struct packet) + 10);
-    handle_ping_response(worker);
+    handle_ping_response(worker, *server);
 }
 
-// TODO: Handle failure.
 // Handles ping response.
-static void handle_ping_response(conn worker)
+// Worker is deleted from local table if worker is not responding properly.
+static void handle_ping_response(conn worker, struct file_Server worker_server)
 {
     void *buffer = malloc(sizeof(struct packet) + 10);
     int bytes = conn_read(worker, buffer, sizeof(struct packet) + 10);
@@ -86,9 +86,19 @@ static void handle_ping_response(conn worker)
 
     if (bytes <= 0)
     {
-
+        remove_server(worker_server.id);
 #ifdef LOG
         printf("Worker (file descriptor: %d) has failed.\n", worker.fd);
+#endif
+    }
+
+    struct packet p = p_decode(buffer);
+
+    if (p.msg_type != PING)
+    {
+        remove_server(worker_server.id);
+#ifdef LOG
+        printf("Received response from worker (file descriptor: %d), but not from ping.\n", worker.fd);
 #endif
     }
 
