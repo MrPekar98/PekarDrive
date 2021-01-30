@@ -133,7 +133,7 @@ const char *parse_ip(const char *str)
 // Parses semicolon seperared string into port number.
 unsigned short parse_port(const char *str)
 {
-    return atoi(str + char_at(str, ';') + 1);
+    return atoi(str + char_at(str, ';'));
 }
 
 // Handles message type.
