@@ -68,11 +68,18 @@ void handle_client(conn client)
 
     if (buffer == NULL || conn_read(client, buffer, READ_SZ) <= 0)
     {
+        if (buffer == NULL)
+            printf("Here\n");
+
+        printf("True\n");
         free(buffer);
         return;
     }
 
     struct packet p = p_decode(buffer);
+
+    // Testing.
+    printf("Seq number: %d\nArg: %s\nLength: %d\nError: %d\nToken: %d\nType: %d\n", p.seq_number, p.arg, p.msg_len, p.error, p.token, p.msg_type);
 
     if (p.msg_type != REGISTER && !service_unavailable(client))
     {
@@ -205,6 +212,6 @@ unsigned char_at(const char *str, char c)
 const char *long2str(long val)
 {
     char *strval = malloc(10);
-    sprintf(strval, "%ld, val");
+    sprintf(strval, "%ld", val);
     return strval;
 }
