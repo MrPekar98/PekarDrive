@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 
 #define ERR_MSG_LEN 50
-#define PORT 55442
+#define PORT 55443
 
 #define READ_TIMEOUT 4
 
