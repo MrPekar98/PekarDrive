@@ -78,9 +78,6 @@ void handle_client(conn client)
 
     struct packet p = p_decode(buffer);
 
-    // Testing.
-    printf("Seq number: %d\nArg: %s\nLength: %d\nError: %d\nToken: %d\nType: %d\n", p.seq_number, p.arg, p.msg_len, p.error, p.token, p.msg_type);
-
     if (p.msg_type != REGISTER && !service_unavailable(client))
     {
         free(buffer);
