@@ -49,11 +49,9 @@ const void *file_read(const char *file_name, const char *host, unsigned short po
     conn_write(client, p_encode(p), sizeof(p) + strlen(file_name));
 
     void *buffer = read_all(client);
-    struct packet received = p_decode(buffer);
     conn_close(&client);
-    free(buffer);
 
-    return !received.error ? received.arg : NULL;
+    return buffer;
 }
 
 // Empties stream of bytes and returns it in a buffer.
@@ -88,11 +86,11 @@ size_t file_write(const char *file_name, const void *buffer, size_t len, short a
     conn_write(client, p_encode(p), sizeof(p) + strlen(p.arg) + 1);
 
     void *buffer_received = read_all(client);
-    struct packet received = p_decode(buffer_received);
+    int written_bytes = atoi(buffer_received);
     conn_close(&client);
     free(buffer_received);
 
-    return !received.error ? *(long *) received.arg : -1;
+    return written_bytes;
 }
 
 // Generates argument for write and append.
@@ -121,9 +119,9 @@ short file_delete(const char *file_name, const char *host, unsigned short port)
     conn_write(client, p_encode(p), sizeof(p) + strlen(p.arg) + 1);
 
     void *buffer_received = read_all(client);
-    struct packet received = p_decode(buffer_received);
+    int deleted = atoi(buffer_received);
     conn_close(&client);
     free(buffer_received);
 
-    return 1;
+    return deleted;
 }
