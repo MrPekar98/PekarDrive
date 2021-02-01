@@ -16,8 +16,7 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static const char *file_name(const char *ptr);
 static const void *buffer(const void *ptr);
 static struct file_output read_file(const char *file_name);
-static struct file_output write_file(const char *file_name, const void *buffer);
-static struct file_output append_file(const char *file_name, const void *buffer);
+static struct file_output write_file(const char *file_name, const void *buffer, short isappend);
 static struct file_output delete_file(const char *file_name);
 
 // Entrypoint for handling file operations.
@@ -31,10 +30,10 @@ struct file_output f_exec(short op, const void *arg)
         output = read_file(arg);
 
     if (op & FILE_WRITE)
-        output = write_file(file_name(arg), buffer(arg));
+        output = write_file(file_name(arg), buffer(arg), 0);
 
     if (op & FILE_APPEND)
-        output = append_file(file_name(arg), buffer(arg));
+        output = write_file(file_name(arg), buffer(arg), 1);
 
     if (op & FILE_DELETE)
         output = delete_file(arg);
@@ -77,17 +76,9 @@ static struct file_output read_file(const char *file_name)
 
 // Writes to new file.
 // Old file with same name is overwritten.
-static struct file_output write_file(const char *file_name, const void *buffer)
+static struct file_output write_file(const char *file_name, const void *buffer, short isappend)
 {
-    long bytes = fs_write_file(file_name, buffer, strlen((char *) buffer), 0);
-    return (struct file_output) {.error = 0, .out = &bytes, .len = sizeof(long)};
-}
-
-// Appends buffer to existing file.
-// If does not exist, create new.
-static struct file_output append_file(const char *file_name, const void *buffer)
-{
-    long bytes = fs_write_file(file_name, buffer, strlen((char *) buffer), 1);
+    long bytes = fs_write_file(file_name, buffer, strlen((char *) buffer), isappend);
     return (struct file_output) {.error = 0, .out = &bytes, .len = sizeof(long)};
 }
 
