@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 
 #define ERR_MSG_LEN 50
-#define PORT 55443
+#define PORT 55442
 
 #define READ_TIMEOUT 4
 
@@ -43,7 +43,7 @@ unsigned short get_port()
 conn client_init(const char *host, unsigned short port)
 {
     struct sockaddr_in server_addr;
-    conn client;
+    conn client = {.error_msg = ""};
     struct timeval timeout = {.tv_sec = READ_TIMEOUT, .tv_usec = 0};
 
     if ((client.fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
