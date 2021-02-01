@@ -1,4 +1,5 @@
 #include "boot.h"
+#include "../fs/fs.h"
 #include <comm.h>
 #include <packet.h>
 #include <stdlib.h>
@@ -29,6 +30,8 @@ static void data_init()
 
     system(command);
     free(command);
+
+    set_dir(WORKER_DIR);
 }
 
 // Sends register message to master.

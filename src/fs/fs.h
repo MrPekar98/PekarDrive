@@ -6,6 +6,7 @@ extern "C"
 {
 #endif
 
+void set_dir(const char *dir);
 short fs_create_file(const char *file);
 void fs_delete_file(const char *file);
 long fs_write_file(const char *file, const void *buffer, unsigned long size, short isappend);
