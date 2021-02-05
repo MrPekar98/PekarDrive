@@ -1,10 +1,13 @@
 CC=gcc
+SLL=ar cr
 CLIENT_SRC=src/client/client.c src/client/arg_parser.c
 WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c
-IN := lib/comm.c lib/packet.c lib/interface.c src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c
+LIBC := lib/comm.c lib/packet.c lib/interface.c
+LIBO := comm.o packet.o interface.o
+IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c
 INCLUDE := lib
 MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
 CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread
@@ -12,6 +15,9 @@ CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread
 MASTER_BUILD=$(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 WORKER_BUILD=$(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 CLIENT_BUILD=$(CC) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS) && mkdir bin && mv pekar bin
+OBJECTS_BUILD=$(foreach src, $(LIBC), $(CC) -c $(src) $(foreach include, $(INCLUDE), -I$(include)) &&) mkdir include
+
+LIB=libpekardrive.a
 
 .PHONY: all test clean
 
@@ -26,6 +32,12 @@ worker: $(WORKER_SRC) $(foreach i, $(IN), $(i)) ; \
 
 client: $(CLIENT_SRC) $(foreach i, $(IN), $(i)) ; \
     $(CLIENT_BUILD)
+
+lib: objects ; \
+    $(SLL) $(LIB) $(foreach obj, $(LIBO), $(obj)) && mv $(LIB) include
+
+objects: $(foreach src, $(LIBC), $(src)) ; \
+    $(OBJECTS_BUILD)
 
 test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
     $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach inc, $(INCLUDE), -I$(inc)) \
