@@ -56,7 +56,7 @@ void exec_ls()
     const void *res = ls(MASTER_ADDR, MASTER_PORT);
 
     if (res != NULL)
-        printf("%s\n", res);
+        printf("%s\n", (char *) res);
 }
 
 // Executes 'read'.
