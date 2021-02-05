@@ -199,7 +199,7 @@ long worker_write(const char *file, const void *data)
     attach_token(MASTER_TKN, &p);
 
     conn worker = client_init(fs->location.ip, fs->location.port);
-    long bytes = conn_write(worker, p_encode(p), WORKER_WRITE_LEN + strlen((char *) data));
+    long bytes = conn_write(worker, p_encode(p), WORKER_WRITE_LEN + strlen((char *) data) + strlen(file));
     conn_close(&worker);
     free(buffer);
 
@@ -220,9 +220,23 @@ void *worker_read(const char *file)
     return NULL;
 }
 
-// TODO: Finish this.
-// Deletes file from first found worker with that file.
+// Deletes file from worker with that file.
 void worker_delete(const char *file)
 {
+    struct file_server *worker = find_by_file(file);
 
+    if (worker == NULL)
+    {
+#ifdef LOG
+        printf("No workers with that file.\n");
+#endif
+        return;
+    }
+
+    struct packet p = p_init(0, file, DELETE);
+    attach_token(MASTER_TKN, &p);
+
+    conn worker_conn = client_init(worker->location.ip, worker->location.port);
+    conn_write(worker_conn, p_encode(p), sizeof(p) + strlen(file));
+    conn_close(&worker_conn);
 }
