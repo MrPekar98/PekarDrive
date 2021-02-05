@@ -15,7 +15,7 @@
 void server_restart(conn *client, int *fd);
 void handle_client(conn client);
 const char *handle_request(enum type msg_type, const char *arg);
-short service_unavailable(conn client);
+short service_available(conn client);
 const char *parse_ip(const char *str);
 unsigned short parse_port(const char *str);
 unsigned char_at(const char *str, char c);
@@ -68,17 +68,13 @@ void handle_client(conn client)
 
     if (buffer == NULL || conn_read(client, buffer, READ_SZ) <= 0)
     {
-        if (buffer == NULL)
-            printf("Here\n");
-
-        printf("True\n");
         free(buffer);
         return;
     }
 
     struct packet p = p_decode(buffer);
 
-    if (p.msg_type != REGISTER && !service_unavailable(client))
+    if (p.msg_type != REGISTER && !service_available(client))
     {
         free(buffer);
         return;
@@ -115,7 +111,7 @@ void handle_client(conn client)
 
 // Checks service for being available.
 // Tells client if service is unavailable.
-short service_unavailable(conn client)
+short service_available(conn client)
 {
     if (!worker_count())
     {
@@ -131,6 +127,7 @@ const char *parse_ip(const char *str)
 {
     char *ip = malloc(strlen(str));
     strncpy(ip, str, char_at(str, ';') - 1);
+    printf("IP: %s\n", ip);
     return ip;
 }
 
