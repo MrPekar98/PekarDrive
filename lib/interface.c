@@ -25,11 +25,9 @@ const void *ls(const char *host, unsigned short port)
     conn_write(client, p_encode(p), sizeof(p) + 3);
 
     void *buffer = read_all(client);
-    struct packet received = p_decode(buffer);
     conn_close(&client);
-    free(buffer);
 
-    return !received.error ? received.arg : NULL;
+    return buffer;
 }
 
 // Reads all bytes of file.
