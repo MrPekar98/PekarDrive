@@ -10,7 +10,6 @@
 static void data_init();
 static void register_worker();
 
-// TODO: Make hidden folder if it does not already exist.
 // Main entrance for booting worker.
 void boot()
 {
