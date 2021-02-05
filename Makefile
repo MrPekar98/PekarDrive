@@ -34,7 +34,7 @@ client: $(CLIENT_SRC) $(foreach i, $(IN), $(i)) ; \
     $(CLIENT_BUILD)
 
 lib: objects ; \
-    $(SLL) $(LIB) $(foreach obj, $(LIBO), $(obj)) && mv $(LIB) include
+    $(SLL) $(LIB) $(foreach obj, $(LIBO), $(obj)) && mv $(LIB) include && rm $(foreach obj, $(LIBO), $(obj))
 
 objects: $(foreach src, $(LIBC), $(src)) ; \
     $(OBJECTS_BUILD)
