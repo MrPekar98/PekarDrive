@@ -18,7 +18,9 @@ const char *file_list_to_str(struct file_list fl);
 
 int main()
 {
-    boot();
+    if (!boot())
+        return 1;
+
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (!server_fd)
@@ -102,7 +104,7 @@ void *handle_client(void *arg)
     else if (p.msg_type == LS)
     {
         const char *ls_output = file_list_to_str(file_list(WORKER_DIR));
-        conn_write(client, p_encode(p_init(p.seq_number + 1, ls_output, LS)), strlen(ls_output));
+        conn_write(client, p_encode(p_init(p.seq_number + 1, ls_output, LS)), strlen(ls_output) + sizeof(struct packet));
     }
 
     else
