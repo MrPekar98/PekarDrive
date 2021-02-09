@@ -21,11 +21,18 @@ struct packet
     } msg_type;
 };
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 struct packet p_init(unsigned seq_number, const char *arg, enum type t);
 void attach_token(unsigned long token, struct packet *restrict p);
 const void *p_encode(struct packet p);
 struct packet p_decode(const void *p);
 void p_cleanup(struct packet p);
 struct packet p_error(unsigned seq_number, const char *arg, enum type t, unsigned long token);
+#ifdef __cplusplus
+}
+#endif
 
 #endif
