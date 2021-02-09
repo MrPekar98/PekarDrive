@@ -8,17 +8,17 @@
 
 // Prototypes.
 static void data_init();
-static void register_worker();
+static short register_worker();
 
 // Main entrance for booting worker.
-void boot()
+short boot()
 {
 #ifdef LOG
     printf("Worker booting...\n");
 #endif
 
     data_init();
-    register_worker();
+    return register_worker();
 }
 
 // Creates hidden folder for data.
@@ -34,9 +34,18 @@ static void data_init()
 }
 
 // Sends register message to master.
-static void register_worker()
+static short register_worker()
 {
     conn worker = client_init(MASTER_ADDR, MASTER_PORT);
+
+    if (worker.error)
+    {
+#ifdef LOG
+        printf("%s\n", worker.error_msg);
+#endif
+        return 0;
+    }
+
     unsigned bytes = 0;
     char *msg = malloc(21);
     sprintf(msg, "%s;%d", get_ip(), get_port());
@@ -47,6 +56,8 @@ static void register_worker()
     while ((bytes = conn_write(worker, p_encode(p), 40)) <= 0);
     free(msg);
     conn_close(&worker);
+
+    return 1;
 }
 
 // Shutdown of worker.
