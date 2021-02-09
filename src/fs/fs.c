@@ -37,7 +37,7 @@ void fs_delete_file(const char *file)
     if (file == NULL || !file_exists(path))
         return;
 
-    char *command = malloc(strlen(path) + 4);
+    char *command = malloc(strlen(path) + 5);
     sprintf(command, "rm %s", path);
     system(command);
     free(command);
