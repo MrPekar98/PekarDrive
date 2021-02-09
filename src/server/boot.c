@@ -25,7 +25,7 @@ void boot()
 static void data_init()
 {
     char *command = malloc(strlen(WORKER_DIR) + 10);
-    sprintf(command, "mkdir ~/%s\0", WORKER_DIR);
+    sprintf(command, "mkdir %s\0", WORKER_DIR);
 
     system(command);
     free(command);
