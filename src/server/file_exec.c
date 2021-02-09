@@ -115,5 +115,5 @@ struct file_list file_list(const char *dir)
 static struct file_output delete_file(const char *file_name)
 {
     fs_delete_file(file_name);
-    return (struct file_output) {.error = 0, .out = NULL, .len = 0};
+    return (struct file_output) {.error = 0, .out = "", .len = 0};
 }
