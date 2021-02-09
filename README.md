@@ -23,23 +23,23 @@ The PekarDrive terminal application comes with 5 operations:
 
 List all contents of every file in every node with the following command:
 
-`pekardrive ls`
+`pekar ls`
 
 Read contents of a file with the following command:
 
-`pekardrive read <FILENAME>`
+`pekar read <FILENAME>`
 
 Write to a file using the following command:
 
-`pekardrive write <FILENAME> <DATA>`
+`pekar write <FILENAME> <DATA>`
 
 Append to an existing file with the following command:
 
-`pekardrive append <FILENAME> <DATA>`
+`pekar append <FILENAME> <DATA>`
 
 Delete a file with the following command:
 
-`pekardrive delete <FILENAME>`
+`pekar delete <FILENAME>`
 
 ### PekarDrive library
 
