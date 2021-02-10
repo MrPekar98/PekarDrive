@@ -14,6 +14,8 @@ static short parse_read(char **args, unsigned short arg_count);
 static short parse_write(char **args, unsigned short arg_count);
 static short parse_append(char **args, unsigned short arg_count);
 static short parse_delete(char **args, unsigned short arg_count);
+static short parse_set_ip(char **args, unsigned short arg_count);
+static short parse_set_port(char **args, unsigned short arg_count);
 
 // Setter for error message.
 static void set_err_msg(const char *msg)
@@ -60,6 +62,12 @@ static short parse_operation(char **args, unsigned short arg_count)
 
     else if (strcmp(args[1], "delete") == 0)
         return parse_delete(args, arg_count);
+
+    else if (strcmp(args[1], "set-ip") == 0)
+        return parse_set_ip(args, arg_count);
+
+    else if (strcmp(args[1], "set-port") == 0)
+        return parse_set_port(args, arg_count);
 
     PARSE_ERR("Unrecognized operation.");
     return 0;
@@ -130,6 +138,36 @@ static short parse_delete(char **args, unsigned short arg_count)
 
     else if (arg_count > 3)
         PARSE_ERR("'delete' requires only one argument.");
+
+    return 1;
+}
+
+// Parses 'set-ip' command.
+static short parse_set_ip(char **args, unsigned short arg_count)
+{
+    if (arg_count < 3)
+    {
+        PARSE_ERR("Missing IP address.");
+        return 0;
+    }
+
+    else if (arg_count > 3)
+        PARSE_ERR("'set-ip' requires only one argument.");
+
+    return 1;
+}
+
+// Parses 'set-port' command-
+static short parse_set_port(char **args, unsigned short arg_count)
+{
+    if (arg_count < 3)
+    {
+        PARSE_ERR("Missing port number.");
+        return 0;
+    }
+
+    else if (arg_count > 3)
+        PARSE_ERR("'set-port' requires only one argument.");
 
     return 1;
 }

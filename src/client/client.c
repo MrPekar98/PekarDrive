@@ -2,26 +2,36 @@
 #include <stdio.h>
 #include <string.h>
 #include <comm.h>
+#include <stdlib.h>
 #include "arg_parser.h"
+#include "settings.h"
 
 #ifdef DEBUG
 #define MASTER_ADDR "127.0.0.1"
 #else
-#define MASTER_ADDR "127.0.0.1"
+#define MASTER_ADDR get_master_host()
 #endif
-#define MASTER_PORT get_port()
+#define MASTER_PORT get_master_port()
 
 void operation_handler(const char *op, const char *arg1, const char *arg2);
 void exec_ls();
 void exec_read(const char *file);
 void exec_write_append(const char *file, const char *data, short isappend);
 void exec_delete(const char *file);
+void exec_set_ip(const char *ip);
+void exec_set_port(unsigned short port);
 
 int main(int argc, char **argv)
 {
     if (!parse_args(argv, argc))
     {
         printf("PekarDrive: %s\n", error_msg());
+        return 1;
+    }
+
+    else if (strcmp(argv[1], "set-ip") != 0 && strcmp(argv[1], "set-port") != 0 && get_master_host() == NULL)
+    {
+        printf("PekarDrive: Use 'set-ip' and 'set-port' to specify master IP and port number, repectively.\n");
         return 1;
     }
 
@@ -44,6 +54,12 @@ void operation_handler(const char *op, const char *arg1, const char *arg2)
 
     else if (strcmp(op, "delete") == 0)
         exec_delete(arg1);
+
+    else if (strcmp(op, "set-ip") == 0)
+        exec_set_ip(arg1);
+
+    else if (strcmp(op, "set-port") == 0)
+        exec_set_port(atoi(arg1));
 }
 
 // Executes 'ls'.
@@ -90,6 +106,18 @@ void exec_delete(const char *file)
     printf("Executing 'delete'...\n");
 #endif
 
-    short deleted = file_delete(file, MASTER_ADDR, MASTER_PORT);
+    short deleted = file_delete(file, MASTER_ADDR, get_master_port());
     printf("File was %s.\n", deleted ? "deleted" : "not deleted");
+}
+
+// Executes 'set-ip'.
+void exec_set_ip(const char *ip)
+{
+    set_master_host(ip);
+}
+
+// Executes 'set-port'.
+void exec_set_port(unsigned short port)
+{
+    set_master_port(port);
 }

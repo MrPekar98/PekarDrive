@@ -1,6 +1,6 @@
 CC=gcc
 SLL=ar cr
-CLIENT_SRC=src/client/client.c src/client/arg_parser.c
+CLIENT_SRC=src/client/client.c src/client/arg_parser.c src/client/settings.c
 WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
