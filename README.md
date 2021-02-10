@@ -13,6 +13,12 @@ This section describes with examples how to use the PekarDrive interface as well
 
 ### Terminal
 
+In order to specify the address of a PekarDrive, the commands `set-ip` and `set-port` are used, as seen in the example below:
+
+`pekar set-ip <IP>`
+
+`pekar set-port <PORT>`
+
 The PekarDrive terminal application comes with 5 operations:
 
 - **ls**: List all contents stored on all worker nodes.
