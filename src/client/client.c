@@ -6,11 +6,7 @@
 #include "arg_parser.h"
 #include "settings.h"
 
-#ifdef DEBUG
-#define MASTER_ADDR "127.0.0.1"
-#else
 #define MASTER_ADDR get_master_host()
-#endif
 #define MASTER_PORT get_master_port()
 
 void operation_handler(const char *op, const char *arg1, const char *arg2);

@@ -1,8 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-//#define CONFIG_FILE "~/.pekar_drive/config"
-#define CONFIG_FILE "./config"
+#define CONFIG_FILE "~/.pekar_drive/config"
 
 void set_master_host(const char *host);
 void set_master_port(unsigned short port);
