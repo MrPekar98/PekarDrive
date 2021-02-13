@@ -179,7 +179,7 @@ void answer_client(conn client, unsigned seq_number, enum type msg_type, struct 
     else
         p = create_packet(seq_number, msg_type, (char *) output.out);
 
-    conn_write(client, p_encode(p), output.len);
+    conn_write(client, p_encode(p), sizeof(struct packet) + output.len + 1);
 }
 
 // Creates packet instance.

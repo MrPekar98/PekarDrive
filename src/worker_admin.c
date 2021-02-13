@@ -19,6 +19,7 @@ static void ping_server(struct file_server *server);
 static void handle_ping_response(conn worker, struct file_server worker_server);
 static struct file_server *find_by_file(const char *file);
 static char *worker_ls_index(unsigned index);
+static long written_bytes(conn worker);
 
 // Sers update time for pinging workers.
 void set_admin_update_time(unsigned time)
@@ -199,14 +200,35 @@ long worker_write(const char *file, const void *data)
     attach_token(MASTER_TKN, &p);
 
     conn worker = client_init(fs->location.ip, fs->location.port);
-    long bytes = conn_write(worker, p_encode(p), WORKER_WRITE_LEN + strlen((char *) data) + strlen(file));
-    conn_close(&worker);
+    conn_write(worker, p_encode(p), WORKER_WRITE_LEN + strlen((char *) data) + strlen(file));
     free(buffer);
+
+    long bytes = written_bytes(worker);
+    conn_close(&worker);
 
     return bytes;
 }
 
-// TODO: finish this.
+// Reads number of bytes written from received response.
+static long written_bytes(conn worker)
+{
+    void *buffer = malloc(sizeof(struct packet) + 10);
+
+    if (conn_read(worker, buffer, sizeof(struct packet) + 10) < 0)
+    {
+        free(buffer);
+        return -1;
+    }
+
+    struct packet p = p_decode(buffer);
+    long bytes = atol(p.arg);
+    p_cleanup(p);
+
+    return bytes;
+}
+
+// TODO: Just add this into write.
+// TODO: Finish this.
 // Appends data to file at first worker found that has given file name.
 long worker_append(const char *file, const void *data)
 {

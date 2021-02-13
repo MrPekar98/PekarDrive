@@ -79,7 +79,11 @@ static struct file_output read_file(const char *file_name)
 static struct file_output write_file(const char *file_name, const void *buffer, short isappend)
 {
     long bytes = fs_write_file(file_name, buffer, strlen((char *) buffer), isappend);
-    return (struct file_output) {.error = 0, .out = &bytes, .len = sizeof(long)};
+    struct file_output output = {.error = 0, .out = malloc(10)};
+    sprintf((char *) output.out, "%ld", bytes);
+    output.len = strlen((char *) output.out);
+
+    return output;
 }
 
 // Returns a list of files names.
