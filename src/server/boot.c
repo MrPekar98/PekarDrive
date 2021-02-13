@@ -8,17 +8,17 @@
 
 // Prototypes.
 static void data_init();
-static short register_worker();
+static short register_worker(const char *ip);
 
 // Main entrance for booting worker.
-short boot()
+short boot(const char *master_ip)
 {
 #ifdef LOG
     printf("Worker booting...\n");
 #endif
 
     data_init();
-    return register_worker();
+    return register_worker(master_ip);
 }
 
 // Creates hidden folder for data.
@@ -34,9 +34,9 @@ static void data_init()
 }
 
 // Sends register message to master.
-static short register_worker()
+static short register_worker(const char *ip)
 {
-    conn worker = client_init(MASTER_ADDR, MASTER_PORT);
+    conn worker = client_init(ip, MASTER_PORT);
 
     if (worker.error)
     {

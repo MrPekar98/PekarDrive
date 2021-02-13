@@ -8,6 +8,7 @@
 #include <string.h>
 #include "file_exec.h"
 #include "boot.h"
+#include "argument.h"
 
 #define READ_SIZE 10000
 
@@ -16,9 +17,17 @@ void answer_client(conn client, unsigned seq_number, enum type msg_type, struct 
 static inline struct packet create_packet(unsigned seq_number, enum type msg_type, const char *arg);
 const char *file_list_to_str(struct file_list fl);
 
-int main()
+int main(int argc, char **argv)
 {
-    if (!boot())
+    char *ip = parse_to_ip(argv, argc);
+
+    if (ip == NULL)
+    {
+        printf("Argument error: %s\n", get_parse_error());
+        return 1;
+    }
+
+    else if (!boot(ip))
         return 1;
 
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);

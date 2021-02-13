@@ -7,7 +7,7 @@ SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c
 LIBC := lib/comm.c lib/packet.c lib/interface.c
 LIBO := comm.o packet.o interface.o
-IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c
+IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c
 INCLUDE := lib
 MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
 CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread
