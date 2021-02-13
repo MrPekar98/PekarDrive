@@ -5,7 +5,7 @@ The general architecture of PekarDrive is seen in the figure below:
 
 ![PekarDrive Architecture](https://github.com/MrPekar98/PekarDrive/blob/main/images/architecture.png)
 
-## Fault tolerance
+## Fault Tolerance
 Fault tolerance is achieved by letting the master write checkpoints of itself periodically. Furthermore, the master pings the workers every minute. There is no failure detection implemented to detect master failure, though having the workers detect master failure if ping message has not been received for over a minute could be implemented.
 
 ## Guide
@@ -58,3 +58,13 @@ The library comes with three headers used to interact with a master node. The he
 `size_t file_write(const char *file_name, const void *buffer, size_t len, short append, const char *host, unsigned short port)`
 
 `short file_delete(const char *file_name, const char *host, unsigned short port)`
+
+## Master and Worker Setup
+
+Execute the following Makefile command to build a master and worker executable:
+
+`make MASTER_TKN=<MASTER_TOKEN> WORKER_TKN=<WORKER_TOKEN>`
+
+Tokens are required to be assigned to the master and worker. The tokens must be integer values. In order to only build a single executable, insert either `master` or `worker` after `make` to build the master or the worker executable, respectively.
+
+Note, it is important the master does not run on the same machine as any workers. If this is needed, change the globally used port number in lib/comm.c and src/server/boot.h before building an individual component.
