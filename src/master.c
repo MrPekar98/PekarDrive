@@ -18,7 +18,7 @@ const char *handle_request(enum type msg_type, const char *arg);
 short service_available(conn client);
 const char *parse_ip(const char *str);
 unsigned short parse_port(const char *str);
-unsigned char_at(const char *str, char c);
+long char_at(const char *str, char c);
 const char *exec_str(enum type msg_type, const char *arg);
 const char *exec_long(enum type msg_type, const char *arg);
 const char *long2str(long val);
@@ -126,7 +126,7 @@ short service_available(conn client)
 const char *parse_ip(const char *str)
 {
     char *ip = malloc(strlen(str));
-    strncpy(ip, str, char_at(str, ';') - 1);
+    strncpy(ip, str, char_at(str, ';'));
     printf("IP: %s\n", ip);
     return ip;
 }
@@ -134,7 +134,7 @@ const char *parse_ip(const char *str)
 // Parses semicolon seperared string into port number.
 unsigned short parse_port(const char *str)
 {
-    return atoi(str + char_at(str, ';'));
+    return atoi(str + (char_at(str, ';') + 1));
 }
 
 // Handles message type.
@@ -176,10 +176,15 @@ const char *exec_str(enum type msg_type, const char *arg)
 // For operators that return long.
 const char *exec_long(enum type msg_type, const char *arg)
 {
-    char *file = malloc(strlen(arg));
-    char *data = malloc(strlen(arg));
-    strncpy(file, arg, char_at(arg, ';') - 1);
-    strcpy(data, arg + strlen(file) + 1);
+    long separator = char_at(arg, ';');
+
+    if (separator < 0)
+        return "Server error.";
+
+    char *file = malloc(separator);
+    char *data = malloc(strlen(arg) - separator);
+    strncpy(file, arg, separator);
+    strcpy(data, arg + separator + 1);
 
     switch (msg_type)
     {
@@ -195,11 +200,19 @@ const char *exec_long(enum type msg_type, const char *arg)
 }
 
 // Returns index at first occurence of char in string.
-unsigned char_at(const char *str, char c)
+// Returns -1 if none were found.
+long char_at(const char *str, char c)
 {
     unsigned index = 0;
-    while (str[index++] != c);
-    return index;
+    unsigned size = strlen(str);
+
+    while (str[index++] != c)
+    {
+        if (index == size)
+            return -1;
+    }
+
+    return index - 1;
 }
 
 // Converts long to string.

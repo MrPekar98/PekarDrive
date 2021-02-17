@@ -136,20 +136,20 @@ static char *worker_ls_index(unsigned index)
 {
     struct file_server *worker = getfs_index(index);
     conn client = client_init(worker->location.ip, worker->location.port);
-    void *buffer = malloc(WORKER_READ_LEN);
+    void *buffer = malloc(WORKER_READ_LEN + sizeof(struct packet));
     struct packet p = p_init(0, "", LS);
     attach_token(MASTER_TKN, &p);
 
     if (buffer == NULL)
         return NULL;
 
-    else if (conn_write(client, p_encode(p), WORKER_WRITE_LEN) <= 0)
+    else if (conn_write(client, p_encode(p), sizeof(struct packet) + 1) <= 0)
     {
         free(buffer);
         return NULL;
     }
 
-    else if (conn_read(client, buffer, WORKER_READ_LEN) <= 0)
+    else if (conn_read(client, buffer, WORKER_READ_LEN + sizeof(struct packet)) <= 0)
     {
         free(buffer);
         return NULL;
@@ -157,6 +157,7 @@ static char *worker_ls_index(unsigned index)
 
     struct packet p_response = p_decode(buffer);
     free(buffer);
+
     return p_response.arg;
 }
 
@@ -173,10 +174,11 @@ char *worker_ls()
         if (ls == NULL)
             continue;
 
-        result = realloc(result, strlen(ls) + 1);
-        sprintf(result, "%s%s%s", result, i != 0 ? "\n" : "", ls);
+        result = realloc(result, strlen(result) + strlen(ls) + 2);
+        sprintf(result, "%s\n%s", result, ls);
     }
 
+    result = realloc(result, strlen(result) + 1);
     sprintf(result, "%s\0", result);
     return result;
 }
@@ -194,13 +196,13 @@ long worker_write(const char *file, const void *data)
         return -1;
     }
 
-    char *buffer = malloc(strlen(file) + strlen((char *) data) + 10);
+    char *buffer = malloc(strlen(file) + strlen((char *) data) + 2);
     sprintf(buffer, "%s;%s\0", file, (char *) data);
     struct packet p = p_init(0, buffer, WRITE);
     attach_token(MASTER_TKN, &p);
 
     conn worker = client_init(fs->location.ip, fs->location.port);
-    conn_write(worker, p_encode(p), WORKER_WRITE_LEN + strlen((char *) data) + strlen(file));
+    conn_write(worker, p_encode(p), strlen(buffer) + sizeof(struct packet) + 1);
     free(buffer);
 
     long bytes = written_bytes(worker);
