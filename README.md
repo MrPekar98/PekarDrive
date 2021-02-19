@@ -68,3 +68,5 @@ Execute the following Makefile command to build a master and worker executable:
 Tokens are required to be assigned to the master and worker. The tokens must be integer values. In order to only build a single executable, insert either `master` or `worker` after `make` to build the master or the worker executable, respectively.
 
 Note, it is important the master does not run on the same machine as any workers. If this is needed, change the globally used port number in lib/comm.c and src/server/boot.h before building an individual component.
+
+Also, if you have not downloaded a release, the project is compiled in debug mode. This means master and workers can run on the same machine and logging is enabled. TO disable debug mode and logging, remove `-DDEBUG` and `-DLOG` from the Makefile.
