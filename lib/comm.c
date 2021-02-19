@@ -8,6 +8,7 @@
 
 #define ERR_MSG_LEN 50
 #define PORT 55443
+#define DEBUG_PORT 55442
 
 #define READ_TIMEOUT 4
 
@@ -39,6 +40,12 @@ unsigned short get_port()
     return PORT;
 }
 
+// Returns alternative port for debugging.
+unsigned short get_dbg_port()
+{
+    return DEBUG_PORT;
+}
+
 // Initializer for client.
 conn client_init(const char *host, unsigned short port)
 {
@@ -66,10 +73,10 @@ conn client_init(const char *host, unsigned short port)
 }
 
 // Listens for client trying to connect.
-conn conn_listen(int server_fd)
+conn conn_listen(int server_fd, unsigned short port)
 {
-#ifdef DEBUG
-    printf("Waiting for connection on port %d...\n", PORT);
+#ifdef LOG
+    printf("Waiting for connection on port %d...\n", port);
 #endif
 
     struct sockaddr_in addr;
@@ -82,7 +89,7 @@ conn conn_listen(int server_fd)
 
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
-    addr.sin_port = htons(PORT);
+    addr.sin_port = htons(port);
 
     if (bind(server_fd, (struct sockaddr *) &addr, sizeof(addr)) < 0)
         return ERR_CONN("Failed binding.", ERR_MSG_LEN);

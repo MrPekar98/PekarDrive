@@ -11,6 +11,12 @@
 #define READ_SZ 10000
 #define WRITE_SZ 10000
 
+#ifdef DEBUG
+#define MASTER_PORT get_dbg_port()
+#else
+#define MASTER_PORT get_port()
+#endif
+
 // Prototypes.
 void server_restart(conn *client, int *fd);
 void handle_client(conn client);
@@ -33,7 +39,7 @@ int main()
 
     while (1)
     {
-        conn client = conn_listen(master_fd);
+        conn client = conn_listen(master_fd, MASTER_PORT);
 
         if (client.error)
         {

@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     while (1)
     {
         pthread_t thread;
-        conn client = conn_listen(server_fd);
+        conn client = conn_listen(server_fd, get_port());
 
         if (client.error)
         {
