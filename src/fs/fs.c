@@ -52,7 +52,7 @@ long fs_write_file(const char *file, const void *buffer, unsigned long size, sho
         return -1;
 
     else if (!file_exists(path))
-        fs_create_file(path);
+        fs_create_file(file);
 
     FILE *f = fopen(path, isappend ? "a" : "w");
 

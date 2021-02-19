@@ -94,7 +94,7 @@ size_t file_write(const char *file_name, const void *buffer, size_t len, short a
 // Generates argument for write and append.
 static const char *gen_write_arg(const char *file, const char *data)
 {
-    char *arg = malloc(strlen(file) + strlen(data) + 3);
+    char *arg = malloc(strlen(file) + strlen(data) + 2);
     sprintf(arg, "%s;%s\0", file, data);
 
     return arg;

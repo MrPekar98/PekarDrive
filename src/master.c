@@ -70,7 +70,7 @@ void server_restart(conn *client, int *fd)
 void handle_client(conn client)
 {
     static unsigned worker_id = 1;
-    void *buffer = malloc(500);
+    void *buffer = malloc(READ_SZ);
 
     if (buffer == NULL || conn_read(client, buffer, READ_SZ) <= 0)
     {
@@ -133,7 +133,7 @@ const char *parse_ip(const char *str)
 {
     char *ip = malloc(strlen(str));
     strncpy(ip, str, char_at(str, ';'));
-    printf("IP: %s\n", ip);
+
     return ip;
 }
 
