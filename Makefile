@@ -6,7 +6,7 @@ MASTER_SRC=src/master.c
 SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c
 LIBC := lib/comm.c lib/packet.c lib/interface.c lib/transmission.c
-LIBO := comm.o packet.o interface.o
+LIBO := comm.o packet.o interface.o transmission.o
 IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c
 INCLUDE := lib
 MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
