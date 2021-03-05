@@ -1,24 +1,18 @@
 #ifndef TRANSMISSION_H
 #define TRANSMISSION_H
 
+#include "comm.h"
 #include <stddef.h>
 
 #define DEFAULT_CHUNK_SIZE 200
-
-// Endpoint struct defining the address of communication.
-struct endpoint
-{
-    char *ip;
-    unsigned short port;
-};
 
 // Main transmission struct.
 typedef struct
 {
     void *data;
-    size_t size;
     char open, error;
     char *err_msg;
+    size_t error_len;
 
     struct _header
     {
@@ -26,17 +20,26 @@ typedef struct
         unsigned chunk_size;
     } header;
 
-    struct endpoint address;
+    conn connection;
 } transmission;
 
-struct endpoint make_endpoint(const char *ip, unsigned short port);
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 void set_transmission_chunk_size(unsigned short size);
 unsigned short get_transmission_chunk_size();
-transmission init_transmission(struct endpoint ep, const void *data, size_t size);
+transmission init_transmission(conn connection, const void *data, size_t size);
 void close_transmission(transmission *restrict t);
 const char *transmission_error(transmission t);
 size_t transmission_size(transmission t);
 char transmit(transmission *restrict t);
 char receive(transmission *restrict t);
+void *transmission_data(transmission t);
+void *transmission_serialize(transmission t);
+transmission transmission_deserialize(const void *serialization);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

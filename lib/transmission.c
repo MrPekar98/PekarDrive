@@ -10,15 +10,6 @@
 
 static volatile unsigned short chunk_size = DEFAULT_CHUNK_SIZE;
 
-// Constructor for struct endpoint.
-struct endpoint make_endpoint(const char *ip, unsigned short port)
-{
-    struct endpoint e = {.ip = malloc(strlen(ip) + 1), .port = port};
-    strcpy(e.ip, ip);
-
-    return e;
-}
-
 // Setter to chunk size.
 void set_transmission_chunk_size(unsigned short size)
 {
@@ -32,31 +23,37 @@ unsigned short get_transmission_chunk_size()
 }
 
 // Creates transmission instance.
-transmission init_transmission(struct endpoint ep, const void *data, size_t size)
+transmission init_transmission(conn connection, const void *data, size_t size)
 {
-    transmission t = {.data = malloc(size), .size = size, .open = 1, .error = 0, .err_msg = NULL};
+    transmission t = {.data = malloc(size), .open = 1, .error = 0, .err_msg = NULL, .error_len = 0};
     memcpy(t.data, data, size);
 
-    t.address.port = ep.port;
-    t.address.ip = malloc(strlen(ep.ip) + 1);
-    strcpy(t.address.ip, ep.ip);
+    t.header.bytes = size;
+    t.header.chunk_size = chunk_size;
+    t.connection.error = connection.error;
+    t.connection.fd = connection.fd;
+    t.connection.max_bytes = connection.max_bytes;
+
+    if (connection.error && connection.error_msg != NULL)
+    {
+        t.connection.error_msg = malloc(strlen(connection.error_msg) + 1);
+        strcpy(t.connection.error_msg, connection.error_msg);
+    }
 
     return t;
 }
 
 // Cleans up memory.
+// Connection is kept open.
 void close_transmission(transmission *restrict t)
 {
     free(t->data);
     t->data = NULL;
     t->open = 0;
-    t->size = 0;
+    t->header.bytes = 0;
 
     if (t->error && t->err_msg != NULL)
         free(t->err_msg);
-
-    if (t->address.ip != NULL)
-        free(t->address.ip);
 }
 
 // Returns error message from transmission.
@@ -71,7 +68,7 @@ const char *transmission_error(transmission t)
 // Returns size of transmission data.
 size_t transmission_size(transmission t)
 {
-    return t.size;
+    return t.header.bytes;
 }
 
 // TODO: Errors are inserted into argument transmission.
@@ -86,4 +83,10 @@ char transmit(transmission *restrict t)
 char receive(transmission *restrict t)
 {
     return 1;
+}
+
+// Returns data.
+void *transmission_data(transmission t)
+{
+    return t.data;
 }
