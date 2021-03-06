@@ -44,6 +44,8 @@ transmission transmission_deserialize(const void *serialization)
             sizeof(t.error), sizeof(t.error_len));
     memcpy(t.err_msg, serialization + sizeof(t.header.bytes) + sizeof(t.header.chunk_size) + sizeof(t.open) +
         sizeof(t.error) + sizeof(t.error_len), t.error_len);
+
+    t.data = malloc(t.header.bytes);
     memcpy(t.data, serialization + sizeof(t.header.bytes) + sizeof(t.header.chunk_size) + sizeof(t.open) +
             sizeof(t.error) + sizeof(t.error_len) + t.error_len, t.header.bytes);
     memcpy(&t.connection.error, serialization + sizeof(t.header.bytes) + sizeof(t.header.chunk_size) +
