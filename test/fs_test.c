@@ -33,7 +33,7 @@ void test_deletion()
     system("touch test.txt");
     fs_delete_file("test.txt");
 
-    assert(fs_write_file("test.txt", NULL, 0, 0) == -1);
+    assert(fs_write_file("test.txt", NULL, 0, 1) == -1);
 }
 
 // Test writing to file.
