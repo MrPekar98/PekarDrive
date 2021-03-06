@@ -4,13 +4,15 @@ CLIENT_SRC=src/client/client.c src/client/arg_parser.c src/client/settings.c
 WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
-TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c
+TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c test/transmission_test.c
 LIBC := lib/comm.c lib/packet.c lib/interface.c lib/transmission.c lib/transmission_serializer.c
 LIBO := comm.o packet.o interface.o transmission.o transmission_serializer.o
 IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c
 INCLUDE := lib
 MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
+TEST_MACROS=-DDEBUG -DLOG -DWORKER_TKN=1 -DMASTER_TKN=2
 CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread
+TEST_CFLAGS=$(TEST_MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread
 
 MASTER_BUILD=$(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 WORKER_BUILD=$(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
@@ -40,8 +42,7 @@ objects: $(foreach src, $(LIBC), $(src)) ; \
     $(OBJECTS_BUILD)
 
 test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
-    $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach inc, $(INCLUDE), -I$(inc)) \
-        $(foreach i, $(IN), $(i)) && ./a.out && rm a.out)
+    $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach i, $(IN), $(i)) $(TEST_CFLAGS) && ./a.out && rm a.out)
 
 clean: ; \
     rm -rf master worker bin
