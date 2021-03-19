@@ -6,9 +6,13 @@
 
 #define DEFAULT_CHUNK_SIZE 200
 
+extern unsigned SERIALIZED_SIZE_WITHOUT_DATA;
+
 // Main transmission struct.
+// Same transmission instance cannot be reused.
 typedef struct
 {
+    short used;
     void *data;
     char open, error;
     char *err_msg;

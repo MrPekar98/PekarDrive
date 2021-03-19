@@ -35,6 +35,8 @@ void test_construction()
     assert(t.connection.fd == 1);
     assert(!t.connection.error);
     assert(t.connection.max_bytes == 1);
+
+    close_transmission(&t);
 }
 
 // Test chunk size setter.
@@ -42,6 +44,7 @@ void test_chunk_size_setter()
 {
     set_transmission_chunk_size(1);
     assert(get_transmission_chunk_size() == 1);
+    set_transmission_chunk_size(DEFAULT_CHUNK_SIZE);
 }
 
 // Test size of transmission data.
@@ -49,6 +52,7 @@ void test_transmission_data_size()
 {
     transmission t = DEFAULT_TRANS;
     assert(transmission_size(t) == 4);
+    close_transmission(&t);
 }
 
 // Test getter of transmission data.
@@ -56,21 +60,26 @@ void test_get_transmission_data()
 {
     transmission t = DEFAULT_TRANS;
     assert(strcmp((char *) transmission_data(t), "Test") == 0);
+    close_transmission(&t);
 }
 
 // Test serialization.
 void test_serialization()
 {
-    void *serial = transmission_serialize(DEFAULT_TRANS);
+    transmission t = DEFAULT_TRANS;
+    void *serial = transmission_serialize(t);
     transmission de_serial = transmission_deserialize(serial);
     free(serial);
 
     assert(de_serial.open);
     assert(!de_serial.error);
-    assert(de_serial.error_len == 0);
-    assert(de_serial.header.bytes == 4);
+    assert(de_serial.error_len == t.error_len);
+    assert(de_serial.header.bytes == t.header.bytes);
     assert(de_serial.header.chunk_size == get_transmission_chunk_size());
-    assert(de_serial.connection.fd == 1);
+    assert(de_serial.connection.fd == t.connection.fd);
     assert(!de_serial.connection.error);
-    assert(de_serial.connection.max_bytes == 1);
+    assert(de_serial.connection.max_bytes == t.connection.max_bytes);
+    assert(strcmp((char *) t.data, (char *) de_serial.data) == 0);
+
+    close_transmission(&t);
 }
