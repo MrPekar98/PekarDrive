@@ -1,6 +1,3 @@
-// TODO: Define local functions to execute the transmission protocol.
-// TODO: comm.h should be used to send the data.
-
 #include "transmission.h"
 #include <stdlib.h>
 #include <string.h>
@@ -16,8 +13,9 @@
 
 static volatile unsigned short chunk_size = DEFAULT_CHUNK_SIZE;
 
-// Prototype.
+// Prototypes.
 static inline void fill_buffer(void *buffer, const void *data, unsigned buffer_size, unsigned data_size);
+static inline unsigned trim_padding(void *buffer, unsigned size);
 
 // Setter to chunk size.
 void set_transmission_chunk_size(unsigned short size)
@@ -34,7 +32,8 @@ unsigned short get_transmission_chunk_size()
 // Creates transmission instance.
 transmission init_transmission(conn connection, const void *data, size_t size)
 {
-    transmission t = {.used = 0, .data = malloc(size), .open = 1, .error = 0, .err_msg = NULL, .error_len = 0};
+    transmission t = {.read_used = 0, .write_used = 0, .data = malloc(size), .open = 1, .error = 0,
+                        .err_msg = NULL, .error_len = 0};
     memcpy(t.data, data, size);
 
     t.header.bytes = size;
@@ -88,13 +87,12 @@ size_t transmission_size(transmission t)
     return t.header.bytes;
 }
 
-// TODO: Errors are inserted into argument transmission.
 // Entry function for transmitting message.
 char transmit(transmission *restrict t)
 {
-    if (t->used)
+    if (t->write_used)
     {
-        *t = TRANS_ERR(t, "Transmission instance already used.");
+        *t = TRANS_ERR(t, "Transmission instance already used for writing.");
         return 0;
     }
 
@@ -110,7 +108,7 @@ char transmit(transmission *restrict t)
         return 0;
     }
 
-    t->used = 1;
+    t->write_used = 1;
     void *buffer = NULL;
     unsigned i, data_size = t->header.chunk_size - SERIALIZED_SIZE_WITHOUT_DATA,
                     iterations = floor((double) t->header.bytes / data_size),
@@ -158,11 +156,60 @@ static inline void fill_buffer(void *buffer, const void *data, unsigned buffer_s
     }
 }
 
-// TODO: Received data inserted into argument transmission.
 // Entry function for reading transmitted data.
 char receive(transmission *restrict t)
 {
+    if (t->read_used)
+    {
+        *t = TRANS_ERR(t, "Transmission instance already used for reading.");
+        return 0;
+    }
+
+    else if (t->error)
+    {
+        *t = TRANS_ERR(t, "Erroneous transmission instance used.");
+        return 0;
+    }
+
+    else if (!t->open)
+    {
+        *t = TRANS_ERR(t, "Transmission instance is closed.");
+        return 0;
+    }
+
+    t->read_used = 1;
+    void *buffer = malloc(t->header.chunk_size);
+    unsigned i = 0;
+
+    while (conn_read(t->connection, buffer + (i++ * t->header.chunk_size), t->header.chunk_size) > 0)
+    {
+        buffer = realloc(buffer, (i + 1) * t->header.chunk_size);
+    }
+
+    unsigned new_size = trim_padding(buffer, (i - 1) * t->header.chunk_size);
+
+    if (t->data != NULL)
+        free(t->data);
+
+    t->data = malloc(new_size);
+    memcpy(t->data, buffer, new_size);
+    free(buffer);
+
     return 1;
+}
+
+// Trims buffer from ending padding values.
+static inline unsigned trim_padding(void *buffer, unsigned size)
+{
+    char *bytes = (char *) buffer;
+
+    for (size--; size >= 0; size--)
+    {
+        if (bytes[size] != 4)
+            break;
+    }
+
+    return size + 1;
 }
 
 // Returns data.

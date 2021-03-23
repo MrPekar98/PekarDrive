@@ -9,10 +9,9 @@
 extern unsigned SERIALIZED_SIZE_WITHOUT_DATA;
 
 // Main transmission struct.
-// Same transmission instance cannot be reused.
+// Same transmission instance can only be used once for transmitting and receiving.
 typedef struct
 {
-    short used;
     void *data;
     char open, error;
     char *err_msg;
@@ -25,6 +24,10 @@ typedef struct
     } header;
 
     conn connection;
+
+    // Not serialized.
+    short read_used;
+    short write_used;
 } transmission;
 
 #ifdef __cplusplus
