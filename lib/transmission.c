@@ -32,9 +32,11 @@ unsigned short get_transmission_chunk_size()
 // Creates transmission instance.
 transmission init_transmission(conn connection, const void *data, size_t size)
 {
-    transmission t = {.read_used = 0, .write_used = 0, .data = malloc(size), .open = 1, .error = 0,
-                        .err_msg = NULL, .error_len = 0};
-    memcpy(t.data, data, size);
+    transmission t = {.read_used = 0, .write_used = 0, .data = data != NULL ? malloc(size) : NULL,
+                        .open = 1, .error = 0, .err_msg = NULL, .error_len = 0};
+
+    if (data != NULL)
+        memcpy(t.data, data, size);
 
     t.header.bytes = size;
     t.header.chunk_size = chunk_size;
@@ -105,6 +107,12 @@ char transmit(transmission *restrict t)
     else if (!t->open)
     {
         *t = TRANS_ERR(t, "Transmission instance is closed.");
+        return 0;
+    }
+
+    else if (t->data == NULL)
+    {
+        *t = TRANS_ERR(t, "Data to transmit is NULL.");
         return 0;
     }
 
@@ -186,12 +194,19 @@ char receive(transmission *restrict t)
         buffer = realloc(buffer, (i + 1) * t->header.chunk_size);
     }
 
+    if (i == 0)
+    {
+        free(buffer);
+        return 0;
+    }
+
     unsigned new_size = trim_padding(buffer, (i - 1) * t->header.chunk_size);
 
     if (t->data != NULL)
         free(t->data);
 
     t->data = malloc(new_size);
+    t->header.bytes = new_size;
     memcpy(t->data, buffer, new_size);
     free(buffer);
 

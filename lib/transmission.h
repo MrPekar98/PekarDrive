@@ -10,6 +10,7 @@ extern const unsigned SERIALIZED_SIZE_WITHOUT_DATA;
 
 // Main transmission struct.
 // Same transmission instance can only be used once for transmitting and receiving.
+// Supposed to be used to write first, then read.
 typedef struct
 {
     void *data;
