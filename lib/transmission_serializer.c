@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-unsigned SERIALIZED_SIZE_WITHOUT_DATA = sizeof(transmission) - (sizeof(void *) + sizeof(char *));
+const unsigned SERIALIZED_SIZE_WITHOUT_DATA = sizeof(transmission) - (sizeof(void *) + sizeof(char *));
 
 // Serializes transmission struct.
 // Error message in transmission and connection is ignored.

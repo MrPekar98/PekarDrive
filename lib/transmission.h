@@ -6,7 +6,7 @@
 
 #define DEFAULT_CHUNK_SIZE 200
 
-extern unsigned SERIALIZED_SIZE_WITHOUT_DATA;
+extern const unsigned SERIALIZED_SIZE_WITHOUT_DATA;
 
 // Main transmission struct.
 // Same transmission instance can only be used once for transmitting and receiving.
