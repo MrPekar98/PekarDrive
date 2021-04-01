@@ -43,7 +43,7 @@ objects: $(foreach src, $(LIBC), $(src)) ; \
     $(OBJECTS_BUILD)
 
 test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
-    $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach i, $(IN), $(i)) $(TEST_CFLAGS) && ./a.out && rm a.out)
+    $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach i, $(IN), $(i)) $(TEST_CFLAGS) && ./a.out &&) rm a.out
 
 clean: ; \
     rm -rf master worker bin
