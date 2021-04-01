@@ -9,10 +9,11 @@ LIBC := lib/comm.c lib/packet.c lib/interface.c lib/transmission.c lib/transmiss
 LIBO := comm.o packet.o interface.o transmission.o transmission_serializer.o
 IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c
 INCLUDE := lib
+THIRDP_INCLUDE=include
 MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
 TEST_MACROS=-DDEBUG -DLOG -DWORKER_TKN=1 -DMASTER_TKN=2
-CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread
-TEST_CFLAGS=$(TEST_MACROS) $(foreach include, $(INCLUDE), -I$(include)) -lpthread
+CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -I$(THIRDP_INCLUDE) -lpthread
+TEST_CFLAGS=$(TEST_MACROS) $(foreach include, $(INCLUDE), -I$(include)) -I$(THIRDP_INCLUDE) -lpthread
 
 MASTER_BUILD=$(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 WORKER_BUILD=$(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
