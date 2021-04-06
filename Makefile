@@ -5,10 +5,10 @@ WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c test/transmission_test.c
-LIBC := lib/comm.c lib/packet.c lib/interface.c lib/transmission.c lib/transmission_serializer.c
+LIBC := lib/comm.c lib/PP/packet.c lib/interface.c lib/PP/transmission.c lib/PP/transmission_serializer.c
 LIBO := comm.o packet.o interface.o transmission.o transmission_serializer.o
 IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c
-INCLUDE := lib
+INCLUDE := lib lib/PP
 THIRDP_INCLUDE=include
 MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
 TEST_MACROS=-DDEBUG -DLOG -DWORKER_TKN=1 -DMASTER_TKN=2

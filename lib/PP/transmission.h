@@ -1,4 +1,4 @@
-'#ifndef TRANSMISSION_H
+#ifndef TRANSMISSION_H
 #define TRANSMISSION_H
 
 #include <comm.h>
