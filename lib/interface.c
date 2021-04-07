@@ -1,8 +1,8 @@
-#include "interface.h"
+#include <interface.h>
 #include <string.h>
 #include <stdlib.h>
 #include <comm.h>
-#include <packet.h>
+#include <PP/packet.h>
 #include <stdio.h>
 
 static void *read_all(conn client);

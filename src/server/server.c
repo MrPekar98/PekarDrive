@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <comm.h>
-#include <packet.h>
+#include <PP/packet.h>
 #include <pthread.h>
 #include <sys/socket.h>
 #include <unistd.h>

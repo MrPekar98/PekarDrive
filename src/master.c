@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include "worker_admin.h"
 #include <comm.h>
-#include <packet.h>
+#include <PP/packet.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>

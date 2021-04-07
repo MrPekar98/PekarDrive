@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <comm.h>
-#include <packet.h>
+#include <PP/packet.h>
 #include <string.h>
 
 #define WORKER_READ_LEN 5000

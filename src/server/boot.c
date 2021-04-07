@@ -1,7 +1,7 @@
 #include "boot.h"
 #include "../fs/fs.h"
 #include <comm.h>
-#include <packet.h>
+#include <PP/packet.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
