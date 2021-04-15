@@ -1,7 +1,11 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <PP/transmission.h>
+#include "transmission_networking.h"
+
+#include <stdio.h>
 
 #define DEFAULT_TRANS init_transmission((conn) {.error = 0, .fd = 1, .max_bytes = 1}, "Test", 4)
 
@@ -10,6 +14,8 @@ void test_chunk_size_setter();
 void test_transmission_data_size();
 void test_get_transmission_data();
 void test_serialization();
+void test_transmission();
+int assert_message(void *data);
 
 int main()
 {
@@ -18,6 +24,7 @@ int main()
     test_transmission_data_size();
     test_get_transmission_data();
     test_serialization();
+    test_transmission();
 
     return 0;
 }
@@ -82,4 +89,33 @@ void test_serialization()
     assert(strcmp((char *) t.data, (char *) de_serial.data) == 0);
 
     close_transmission(&t);
+}
+
+// Tests transmission of message.
+void test_transmission()
+{
+    pid_t server = setup_server(assert_message);
+    sleep(3);
+
+    conn client = client_init("127.0.0.1", get_test_server_port());
+    transmission t = init_transmission(client, "Test", 4);
+    transmit(&t);
+    //receive(&t);
+
+    //printf("CLIENT: %s\n", (char *) transmission_data(t));
+
+    stop_server(server);
+    conn_close(&client);
+
+    //void *received_data = transmission_data(t);
+    //assert(received_data != NULL);
+    //assert(strcmp((char *) transmission_data(t), "Test") == 0);
+
+    close_transmission(&t);
+}
+
+// Server assertion of received message from client.
+int assert_message(void *data)
+{
+    strcmp((char *) data, "Test") == 0;
 }

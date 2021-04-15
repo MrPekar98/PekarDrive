@@ -5,6 +5,7 @@
 
 #define TRANS_ERR(trans, err) ({ \
     close_transmission(trans); \
+    trans->error = 1; \
     trans->error_len = strlen(err); \
     trans->err_msg = malloc(trans->error_len); \
     strcpy(trans->err_msg, err); \

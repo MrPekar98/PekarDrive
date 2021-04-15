@@ -5,6 +5,7 @@ WORKER_SRC=src/server/server.c
 MASTER_SRC=src/master.c
 SLAVEIN := ..
 TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c test/transmission_test.c
+TESTIN := test/transmission_networking.c
 LIBC := lib/comm.c lib/PP/packet.c lib/interface.c lib/PP/transmission.c lib/PP/transmission_serializer.c
 LIBO := comm.o packet.o interface.o transmission.o transmission_serializer.o
 IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c
@@ -42,8 +43,8 @@ lib: objects ; \
 objects: $(foreach src, $(LIBC), $(src)) ; \
     $(OBJECTS_BUILD)
 
-test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) ; \
-    $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach i, $(IN), $(i)) $(TEST_CFLAGS) && ./a.out &&) rm a.out
+test: $(foreach src, $(TESTSRC), $(src)) $(foreach i, $(IN), $(i)) $(foreach in, $(TESTIN), $(in)) ; \
+    $(foreach t, $(TESTSRC), $(CC) $(t) $(foreach i, $(IN), $(i)) $(foreach in, $(TESTIN), $(in)) $(TEST_CFLAGS) && ./a.out &&) rm a.out
 
 clean: ; \
     rm -rf master worker bin
