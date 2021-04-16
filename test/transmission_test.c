@@ -95,17 +95,19 @@ void test_serialization()
 void test_transmission()
 {
     pid_t server = setup_server(assert_message);
-    sleep(3);
+    assert(server > 0);
+    sleep(5);
 
     conn client = client_init("127.0.0.1", get_test_server_port());
     transmission t = init_transmission(client, "Test", 4);
-    transmit(&t);
-    //receive(&t);
+    assert(transmit(&t));
+    sleep(2);
+    //assert(receive(&t));
 
-    //printf("CLIENT: %s\n", (char *) transmission_data(t));
-
+    int error = t.error;
     stop_server(server);
     conn_close(&client);
+    assert(!error);
 
     //void *received_data = transmission_data(t);
     //assert(received_data != NULL);

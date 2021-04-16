@@ -19,10 +19,13 @@ pid_t setup_server(int (*assert)(void *))
     pid_t server = fork();
 
     if (server < 0)
-        return server;
+        return -1;
 
     else if (server == 0)
         start_server(TEST_PORT, assert);
+
+    else
+        return server;
 }
 
 // Server start.
@@ -50,17 +53,12 @@ static void start_server(unsigned port, int (*assert)(void *))
         void *data = transmission_data(read);
 
         if (assert != NULL && !assert(data))
-        {
             write = init_transmission(client, "Assertion failed.", 17);
-            transmit(&write);
-        }
 
         else
-        {
-            write = init_transmission(client, data, read.header.bytes);
-            transmit(&write);
-        }
+            write = init_transmission(client, "Assertion success", 17);
 
+        transmit(&write);
         close_transmission(&write);
         close_transmission(&read);
         conn_close(&client);

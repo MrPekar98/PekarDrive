@@ -146,6 +146,8 @@ char transmit(transmission *restrict t)
     close_transmission(&sub);
     free(buffer);
     free(serialized);
+
+    return 1;
 }
 
 // Copies data into buffer.
@@ -195,7 +197,7 @@ char receive(transmission *restrict t)
         buffer = realloc(buffer, (i + 1) * t->header.chunk_size);
     }
 
-    if (i == 0)
+    if (i == 1)
     {
         free(buffer);
         return 0;
