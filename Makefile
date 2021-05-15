@@ -9,17 +9,17 @@ TESTIN := test/transmission_networking.c
 LIBC := lib/comm.c lib/PP/packet.c lib/interface.c lib/PP/transmission.c lib/PP/transmission_serializer.c
 LIBO := comm.o packet.o interface.o transmission.o transmission_serializer.o
 IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c
-INCLUDE := lib
+INCLUDE=include
 THIRDP_INCLUDE=include
 MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
 TEST_MACROS=-DDEBUG -DLOG -DWORKER_TKN=1 -DMASTER_TKN=2
-CFLAGS=$(MACROS) $(foreach include, $(INCLUDE), -I$(include)) -I$(THIRDP_INCLUDE) -lpthread
-TEST_CFLAGS=$(TEST_MACROS) $(foreach include, $(INCLUDE), -I$(include)) -I$(THIRDP_INCLUDE) -lpthread
+CFLAGS=$(MACROS) -I$(INCLUDE) -lpthread
+TEST_CFLAGS=$(TEST_MACROS) -I$(INCLUDE) -lpthread
 
 MASTER_BUILD=$(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 WORKER_BUILD=$(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 CLIENT_BUILD=$(CC) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS) && mkdir bin && mv pekar bin
-OBJECTS_BUILD=$(foreach src, $(LIBC), $(CC) -c $(src) $(foreach include, $(INCLUDE), -I$(include)) &&) mkdir include
+OBJECTS_BUILD=$(foreach src, $(LIBC), $(CC) -c $(src)  -I$(INCLUDE) &&) mkdir include
 
 LIB=libpekardrive.a
 
