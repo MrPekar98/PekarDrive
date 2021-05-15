@@ -19,7 +19,8 @@ TEST_CFLAGS=$(TEST_MACROS) -I$(INCLUDE) -lpthread
 MASTER_BUILD=$(CC) -o master $(MASTER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 WORKER_BUILD=$(CC) -o worker $(WORKER_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS)
 CLIENT_BUILD=$(CC) -o pekar $(CLIENT_SRC) $(foreach i, $(IN), $(i)) $(CFLAGS) && mkdir bin && mv pekar bin
-OBJECTS_BUILD=$(foreach src, $(LIBC), $(CC) -c $(src)  -I$(INCLUDE) &&) mkdir include
+#OBJECTS_BUILD=$(foreach src, $(LIBC), $(CC) -c $(src)  -I$(INCLUDE) &&)
+OBJECTS_BUILD=$(CC) -c -I$(INCLUDE) $(foreach src, $(LIBC), $(src))
 
 LIB=libpekardrive.a
 
@@ -37,7 +38,7 @@ worker: $(WORKER_SRC) $(foreach i, $(IN), $(i)) ; \
 client: $(CLIENT_SRC) $(foreach i, $(IN), $(i)) ; \
     $(CLIENT_BUILD)
 
-lib: objects ; \
+install: objects ; \
     $(SLL) $(LIB) $(foreach obj, $(LIBO), $(obj)) && mv $(LIB) lib && rm $(foreach obj, $(LIBO), $(obj))
 
 objects: $(foreach src, $(LIBC), $(src)) ; \
