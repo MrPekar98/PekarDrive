@@ -14,6 +14,15 @@ Fault tolerance is achieved by letting the master write checkpoints of itself pe
 ## Guide
 This section describes with examples how to use the PekarDrive interface as well as the terminal application.
 
+### Compiling
+Run the following command to build an archive `libpekardrive.a` file in folder /lib used for linkage:
+
+`make install`
+
+Then, compile with the following options:
+
+`... -l<PATH TO LIBRARY>/lib/libpekardrive.a` `-I<PATH TO LIBRARY>/INCLUDE`
+
 ### Terminal
 
 In order to specify the address of a PekarDrive, the commands `set-ip` and `set-port` are used, as seen in the example below:
