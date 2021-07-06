@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../util/logger.h"
 
 // Prototypes.
 static void data_init();
@@ -14,7 +15,7 @@ static short register_worker(const char *ip);
 short boot(const char *master_ip)
 {
 #ifdef LOG
-    printf("Worker booting...\n");
+    logger(MESSAGE, COMP_WORKER, "Worker booting...");
 #endif
 
     data_init();
@@ -41,7 +42,7 @@ static short register_worker(const char *ip)
     if (worker.error)
     {
 #ifdef LOG
-        printf("%s\n", worker.error_msg);
+        logger(ERROR, COMP_WORKER, worker.error_msg);
 #endif
         return 0;
     }
@@ -64,6 +65,6 @@ static short register_worker(const char *ip)
 void terminate()
 {
 #ifdef LOG
-    printf("Worker shutdown...\n");
+    logger(MESSAGE, COMP_WORKER, "Worker shutdown...");
 #endif
 }

@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <stddef.h>
 #include <errno.h>
+#include "../util/logger.h"
 
 #define SEP ';'
 
@@ -98,7 +99,7 @@ struct file_list file_list(const char *dir)
     if (directory == NULL)
     {
 #ifdef LOG
-        perror("Directory ~/.pekar_worker could not be opened");
+        logger(ERROR, COMP_WORKER, "Directory ~/.pekar_worker could not be opened.");
 #endif
         pthread_mutex_unlock(&mutex);
         return list;

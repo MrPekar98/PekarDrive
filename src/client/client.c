@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "arg_parser.h"
 #include "settings.h"
+#include "../util/logger.h"
 
 #define MASTER_ADDR get_master_host()
 #define MASTER_PORT get_master_port()
@@ -21,13 +22,13 @@ int main(int argc, char **argv)
 {
     if (!parse_args(argv, argc))
     {
-        printf("PekarDrive: %s\n", error_msg());
+        logger(ERROR, COMP_CLIENT, error_msg());
         return 1;
     }
 
     else if (strcmp(argv[1], "set-ip") != 0 && strcmp(argv[1], "set-port") != 0 && get_master_host() == NULL)
     {
-        printf("PekarDrive: Use 'set-ip' and 'set-port' to specify master IP and port number, repectively.\n");
+        logger(MESSAGE, COMP_CLIENT, "Use 'set-ip' and 'set-port' to specify master IP and port number, repectively.");
         return 1;
     }
 
@@ -62,7 +63,7 @@ void operation_handler(const char *op, const char *arg1, const char *arg2)
 void exec_ls()
 {
 #ifdef DEBUG
-    printf("Executing 'ls'...\n");
+    logger(MESSAGE, COMP_CLIENT, "Executing 'ls'...");
 #endif
 
     const void *res = ls(MASTER_ADDR, MASTER_PORT);
@@ -75,7 +76,7 @@ void exec_ls()
 void exec_read(const char *file)
 {
 #ifdef DEBUG
-    printf("Executing 'read'\n");
+    logger(MESSAGE, COMP_CLIENT, "Executing 'read'...");
 #endif
 
     const void *res = file_read(file, MASTER_ADDR, MASTER_PORT);
@@ -88,7 +89,11 @@ void exec_read(const char *file)
 void exec_write_append(const char *file, const char *data, short isappend)
 {
 #ifdef DEBUG
-    printf("Executing '%s'...\n", isappend ? "append" : "write");
+    if (isappend)
+        logger(MESSAGE, COMP_CLIENT, "Executing 'append'...");
+
+    else
+        logger(MESSAGE, COMP_CLIENT, "Executing 'write'...");
 #endif
 
     size_t bytes = file_write(file, data, strlen(data), isappend, MASTER_ADDR, MASTER_PORT);
@@ -99,7 +104,7 @@ void exec_write_append(const char *file, const char *data, short isappend)
 void exec_delete(const char *file)
 {
 #ifdef DEBUG
-    printf("Executing 'delete'...\n");
+    logger(MESSAGE, COMP_CLIENT, "Executing 'delete'...");
 #endif
 
     short deleted = file_delete(file, MASTER_ADDR, get_master_port());

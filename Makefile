@@ -8,7 +8,7 @@ TESTSRC := test/fs_test.c test/server_table_test.c test/file_exec_test.c test/tr
 TESTIN := test/transmission_networking.c
 LIBC := lib/comm.c lib/PP/packet.c lib/interface.c lib/PP/transmission.c lib/PP/transmission_serializer.c
 LIBO := comm.o packet.o interface.o transmission.o transmission_serializer.o
-IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c
+IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c src/util/logger.c
 INCLUDE=include
 THIRDP_INCLUDE=include
 MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)

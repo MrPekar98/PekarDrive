@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../util/logger.h"
 
 #define READ_SIZE 100
 
@@ -59,7 +60,7 @@ long fs_write_file(const char *file, const void *buffer, unsigned long size, sho
     if (f == NULL)
     {
 #ifdef LOG
-        perror("File operation error");
+        logger(ERROR, COMP_DEFAULT, "File operation error.");
 #endif
         return -1;
     }
@@ -78,7 +79,7 @@ void *fs_read_file(const char *file)
     if (f == NULL)
     {
 #ifdef LOG
-        perror("File operation error");
+        logger(ERROR, COMP_DEFAULT, "File operation error.");
 #endif
         return NULL;
     }

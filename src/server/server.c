@@ -9,6 +9,7 @@
 #include "file_exec.h"
 #include "boot.h"
 #include "argument.h"
+#include "../util/logger.h"
 
 #define READ_SIZE 10000
 
@@ -23,7 +24,7 @@ int main(int argc, char **argv)
 
     if (ip == NULL)
     {
-        printf("Argument error: %s\n", get_parse_error());
+        logger(ERROR, COMP_WORKER, get_parse_error());
         return 1;
     }
 
@@ -35,7 +36,7 @@ int main(int argc, char **argv)
     if (!server_fd)
     {
 #ifdef LOG
-        printf("Connection setup failed.\n");
+        logger(ERROR, COMP_WORKER, "Connection setup failed.");
 #endif
         return 1;
     }
@@ -48,7 +49,10 @@ int main(int argc, char **argv)
         if (client.error)
         {
 #ifdef LOG
-            printf("Client connection refused: %s\n", client.error_msg);
+            char *msg = malloc(100);
+            sprintf(msg, "Client connection refused: %s", client.error_msg);
+            logger(WARNING, COMP_WORKER, msg);
+            free(msg);
 #endif
             conn_close(&client);
             close(server_fd);
@@ -76,7 +80,7 @@ void *handle_client(void *arg)
     if (bytes <= 0)
     {
 #ifdef LOG
-        printf("Error reading client.\n");
+        logger(ERROR, COMP_WORKER, "Error reading client.");
 #endif
         free(buffer);
         conn_close(&client);
@@ -91,7 +95,7 @@ void *handle_client(void *arg)
     if (p.token != MASTER_TKN)
     {
 #ifdef LOG
-        printf("Message not from client.\n");
+        logger(WARNING, COMP_WORKER, "Message not from client.");
 #endif
         free(buffer);
         p_cleanup(p);
@@ -106,7 +110,7 @@ void *handle_client(void *arg)
     {
         conn_write(client, p_encode(p_init(p.seq_number + 1, "1", PING)), 13);
 #ifdef LOG
-        printf("PING!\n");
+        logger(MESSAGE, COMP_WORKER, "PING!");
 #endif
     }
 

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include "util/logger.h"
 
 #define READ_SZ 10000
 #define WRITE_SZ 10000
@@ -44,7 +45,7 @@ int main()
         if (client.error)
         {
 #ifdef LOG
-            printf("Master error: %s\n", client.error_msg);
+            logger(ERROR, COMP_MASTER, client.error_msg);
 #endif
 
             server_restart(&client, &master_fd);
@@ -91,7 +92,7 @@ void handle_client(conn client)
         if (p.token != WORKER_TKN)
         {
 #ifdef LOG
-            printf("Non-worker attempted to register.\n");
+            logger(WARNING, COMP_MASTER, "Non-worker attempted to register.");
 #endif
             free(buffer);
             return;
@@ -102,7 +103,10 @@ void handle_client(conn client)
         add_worker(worker);
 
 #ifdef LOG
-        printf("Registered new worker (%d):\n%s:%d\n\n", worker.id, worker.location.ip, worker.location.port);
+        char *msg = malloc(100);
+        sprintf(msg, "Registered new worker (%d):\n%s:%d\n", worker.id, worker.location.ip, worker.location.port);
+        logger(MESSAGE, COMP_MASTER, msg);
+        free(msg);
 #endif
     }
 

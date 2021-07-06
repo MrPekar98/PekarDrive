@@ -6,6 +6,7 @@
 #include <comm.h>
 #include <PP/packet.h>
 #include <string.h>
+#include "util/logger.h"
 
 #define WORKER_READ_LEN 5000
 #define WORKER_WRITE_LEN 100
@@ -21,7 +22,8 @@ static struct file_server *find_by_file(const char *file);
 static char *worker_ls_index(unsigned index);
 static long written_bytes(conn worker);
 
-// Sers update time for pinging workers.
+
+// Sets update time for pinging workers.
 void set_admin_update_time(unsigned time)
 {
     update_time = time;
@@ -67,7 +69,10 @@ static void *manager_thread(void *arg)
 static void ping_server(struct file_server *server)
 {
 #ifdef LOG
-    printf("Ping to %d (%s:%d).\n", server->id, server->location.ip, server->location.port);
+    char *msg = malloc(50);
+    sprintf(msg, "Ping to %d (%s:%d).", server->id, server->location.ip, server->location.port);
+    logger(MESSAGE, COMP_MASTER, msg);
+    free(msg);
 #endif
 
     conn worker = client_init(server->location.ip, server->location.port);
@@ -88,7 +93,10 @@ static void handle_ping_response(conn worker, struct file_server worker_server)
     {
         remove_server(worker_server.id);
 #ifdef LOG
-        printf("Worker (file descriptor: %d) has failed.\n", worker.fd);
+        char *msg = malloc(50);
+        sprintf(msg, "Worker (file descriptor: %d) has failed.", worker.fd);
+        logger(WARNING, COMP_MASTER, msg);
+        free(msg);
 #endif
     }
 
@@ -98,13 +106,21 @@ static void handle_ping_response(conn worker, struct file_server worker_server)
     {
         remove_server(worker_server.id);
 #ifdef LOG
-        printf("Received response from worker (file descriptor: %d), but not from ping.\n", worker.fd);
+        char *msg = malloc(100);
+        sprintf(msg, "Received response from worker (file descriptor: %d), but not from ping.", worker.fd);
+        logger(MESSAGE, COMP_MASTER, msg);
+        free(msg);
 #endif
     }
 
 #ifdef LOG
     else
-        printf("Successful response from worker (file descriptor: %d).\n", worker.fd);
+    {
+        char *msg = malloc(50);
+        sprintf(msg, "Successful response from worker (file descriptor: %d).", worker.fd);
+        logger(MESSAGE, COMP_MASTER, msg);
+        free(msg);
+    }
 #endif
 }
 
@@ -191,7 +207,7 @@ long worker_write(const char *file, const void *data)
     if (fs == NULL)
     {
 #ifdef LOG
-        printf("No workers registrered.\n");
+        logger(ERROR, COMP_MASTER, "No workers registrered.");
 #endif
         return -1;
     }
@@ -252,7 +268,7 @@ void worker_delete(const char *file)
     if (worker == NULL)
     {
 #ifdef LOG
-        printf("No workers with that file.\n");
+        logger(ERROR, COMP_MASTER, "No workers with that file.");
 #endif
         return;
     }
