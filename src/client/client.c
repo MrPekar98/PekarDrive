@@ -62,7 +62,7 @@ void operation_handler(const char *op, const char *arg1, const char *arg2)
 // Executes 'ls'.
 void exec_ls()
 {
-#ifdef DEBUG
+#ifdef VERBOSE_2
     logger(MESSAGE, COMP_CLIENT, "Executing 'ls'...");
 #endif
 
@@ -75,7 +75,7 @@ void exec_ls()
 // Executes 'read'.
 void exec_read(const char *file)
 {
-#ifdef DEBUG
+#ifdef VERBOSE_2
     logger(MESSAGE, COMP_CLIENT, "Executing 'read'...");
 #endif
 
@@ -88,7 +88,7 @@ void exec_read(const char *file)
 // Executes 'write' or 'append'.
 void exec_write_append(const char *file, const char *data, short isappend)
 {
-#ifdef DEBUG
+#ifdef VERBOSE_2
     if (isappend)
         logger(MESSAGE, COMP_CLIENT, "Executing 'append'...");
 
@@ -103,7 +103,7 @@ void exec_write_append(const char *file, const char *data, short isappend)
 // Executes 'delete'.
 void exec_delete(const char *file)
 {
-#ifdef DEBUG
+#ifdef VERBOSE_2
     logger(MESSAGE, COMP_CLIENT, "Executing 'delete'...");
 #endif
 

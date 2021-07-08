@@ -3,6 +3,8 @@
 #include <string.h>
 #include <math.h>
 
+#define PAD 4
+
 #define TRANS_ERR(trans, err) ({ \
     close_transmission(trans); \
     trans->error = 1; \
@@ -163,7 +165,7 @@ static inline void fill_buffer(void *buffer, const void *data, unsigned buffer_s
 
     for (i = 0; i < buffer_size - data_size; i++)
     {
-        sub_dest[i] = 4;
+        sub_dest[i] = PAD;
     }
 }
 
@@ -192,6 +194,7 @@ char receive(transmission *restrict t)
     void *buffer = malloc(t->header.chunk_size);
     unsigned i = 0;
 
+    // TODO: Since conn_read() crashes on empty stream, we can check if received stream contains padding characters. In this case, we know its the last packet.
     while (conn_read(t->connection, buffer + (i++ * t->header.chunk_size), t->header.chunk_size) > 0)
     {
         buffer = realloc(buffer, (i + 1) * t->header.chunk_size);

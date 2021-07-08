@@ -98,7 +98,7 @@ struct file_list file_list(const char *dir)
 
     if (directory == NULL)
     {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
         logger(ERROR, COMP_WORKER, "Directory ~/.pekar_worker could not be opened.");
 #endif
         pthread_mutex_unlock(&mutex);

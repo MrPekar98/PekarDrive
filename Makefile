@@ -11,7 +11,7 @@ LIBO := comm.o packet.o interface.o transmission.o transmission_serializer.o
 IN := $(foreach src, $(LIBC), $(src)) src/fs/fs.c src/server_table.c src/server/file_exec.c src/worker_admin.c src/balance.c src/server/boot.c src/server/argument.c src/util/logger.c
 INCLUDE=include
 THIRDP_INCLUDE=include
-MACROS=-DDEBUG -DLOG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
+MACROS=-DVERBOSE_1 -DDEBUG -DWORKER_TKN=$(WORKER_TKN) -DMASTER_TKN=$(MASTER_TKN)
 TEST_MACROS=-DDEBUG -DLOG -DWORKER_TKN=1 -DMASTER_TKN=2
 CFLAGS=$(MACROS) -I$(INCLUDE) -lpthread
 TEST_CFLAGS=$(TEST_MACROS) -I$(INCLUDE) -lpthread

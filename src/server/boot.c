@@ -14,7 +14,7 @@ static short register_worker(const char *ip);
 // Main entrance for booting worker.
 short boot(const char *master_ip)
 {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
     logger(MESSAGE, COMP_WORKER, "Worker booting...");
 #endif
 
@@ -41,7 +41,7 @@ static short register_worker(const char *ip)
 
     if (worker.error)
     {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
         logger(ERROR, COMP_WORKER, worker.error_msg);
 #endif
         return 0;
@@ -64,7 +64,7 @@ static short register_worker(const char *ip)
 // Shutdown of worker.
 void terminate()
 {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
     logger(MESSAGE, COMP_WORKER, "Worker shutdown...");
 #endif
 }

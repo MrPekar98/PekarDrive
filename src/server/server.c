@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
     if (!server_fd)
     {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
         logger(ERROR, COMP_WORKER, "Connection setup failed.");
 #endif
         return 1;
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
         if (client.error)
         {
-#ifdef LOG
+#ifdef VERBOSE_2
             char *msg = malloc(100);
             sprintf(msg, "Client connection refused: %s", client.error_msg);
             logger(WARNING, COMP_WORKER, msg);
@@ -79,7 +79,7 @@ void *handle_client(void *arg)
 
     if (bytes <= 0)
     {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
         logger(ERROR, COMP_WORKER, "Error reading client.");
 #endif
         free(buffer);
@@ -94,7 +94,7 @@ void *handle_client(void *arg)
 
     if (p.token != MASTER_TKN)
     {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
         logger(WARNING, COMP_WORKER, "Message not from client.");
 #endif
         free(buffer);
@@ -109,7 +109,7 @@ void *handle_client(void *arg)
     else if (p.msg_type == PING)
     {
         conn_write(client, p_encode(p_init(p.seq_number + 1, "1", PING)), 13);
-#ifdef LOG
+#ifdef VERBOSE_2
         logger(MESSAGE, COMP_WORKER, "PING!");
 #endif
     }

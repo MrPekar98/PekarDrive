@@ -68,7 +68,7 @@ static void *manager_thread(void *arg)
 // Pings a file server,
 static void ping_server(struct file_server *server)
 {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
     char *msg = malloc(50);
     sprintf(msg, "Ping to %d (%s:%d).", server->id, server->location.ip, server->location.port);
     logger(MESSAGE, COMP_MASTER, msg);
@@ -92,7 +92,7 @@ static void handle_ping_response(conn worker, struct file_server worker_server)
     if (bytes <= 0)
     {
         remove_server(worker_server.id);
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
         char *msg = malloc(50);
         sprintf(msg, "Worker (file descriptor: %d) has failed.", worker.fd);
         logger(WARNING, COMP_MASTER, msg);
@@ -105,7 +105,7 @@ static void handle_ping_response(conn worker, struct file_server worker_server)
     if (p.msg_type != PING)
     {
         remove_server(worker_server.id);
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
         char *msg = malloc(100);
         sprintf(msg, "Received response from worker (file descriptor: %d), but not from ping.", worker.fd);
         logger(MESSAGE, COMP_MASTER, msg);
@@ -113,7 +113,7 @@ static void handle_ping_response(conn worker, struct file_server worker_server)
 #endif
     }
 
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
     else
     {
         char *msg = malloc(50);
@@ -206,7 +206,7 @@ long worker_write(const char *file, const void *data)
 
     if (fs == NULL)
     {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
         logger(ERROR, COMP_MASTER, "No workers registrered.");
 #endif
         return -1;
@@ -267,7 +267,7 @@ void worker_delete(const char *file)
 
     if (worker == NULL)
     {
-#ifdef LOG
+#ifdef VERBOSE_1 || VERBOSE_2
         logger(ERROR, COMP_MASTER, "No workers with that file.");
 #endif
         return;

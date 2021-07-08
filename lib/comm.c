@@ -75,7 +75,7 @@ conn client_init(const char *host, unsigned short port)
 // Listens for client trying to connect.
 conn conn_listen(int server_fd, unsigned short port)
 {
-#ifdef LOG
+#ifdef VERBOSE_2
     printf("Waiting for connection on port %d...\n", port);
 #endif
 
@@ -106,7 +106,7 @@ conn conn_listen(int server_fd, unsigned short port)
 // Writes message to file descriptor.
 ssize_t conn_write(conn connection, const void *buffer, size_t len)
 {
-#ifdef DEBUG
+#ifdef VERBOSE_2
     printf("Writing to %d...\n", connection.fd);
 #endif
 
@@ -116,7 +116,7 @@ ssize_t conn_write(conn connection, const void *buffer, size_t len)
 // Reads message from file descriptor.
 ssize_t conn_read(conn connection, void *buffer, size_t len)
 {
-#ifdef DEBUG
+#ifdef VERBOSE_2
     printf("Reading from %d...\n", connection.fd);
 #endif
 
@@ -126,7 +126,7 @@ ssize_t conn_read(conn connection, void *buffer, size_t len)
 // Closes connection.
 void conn_close(conn *restrict connection)
 {
-#ifdef DEBUG
+#ifdef VERBOSE_2
     printf("Closing %d...\n", connection->fd);
 #endif
 
