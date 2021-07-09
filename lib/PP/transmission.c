@@ -19,6 +19,7 @@ static volatile unsigned short chunk_size = DEFAULT_CHUNK_SIZE;
 // Prototypes.
 static inline void fill_buffer(void *buffer, const void *data, unsigned buffer_size, unsigned data_size);
 static inline unsigned trim_padding(void *buffer, unsigned size);
+static inline short contains_padding(void *restrict buffer, unsigned len);
 
 // Setter to chunk size.
 void set_transmission_chunk_size(unsigned short size)
@@ -193,20 +194,23 @@ char receive(transmission *restrict t)
     t->read_used = 1;
     void *buffer = malloc(t->header.chunk_size);
     unsigned i = 0;
+    ssize_t bytes;
 
-    // TODO: Since conn_read() crashes on empty stream, we can check if received stream contains padding characters. In this case, we know its the last packet.
-    while (conn_read(t->connection, buffer + (i++ * t->header.chunk_size), t->header.chunk_size) > 0)
+    while ((bytes = conn_read(t->connection, buffer + (i++ * t->header.chunk_size), t->header.chunk_size)) > 0)
     {
+        if (contains_padding(buffer, i * t->header.chunk_size))
+            break;
+
         buffer = realloc(buffer, (i + 1) * t->header.chunk_size);
     }
 
-    if (i == 1)
+    if (i == 1 && bytes <= 0)
     {
         free(buffer);
         return 0;
     }
 
-    unsigned new_size = trim_padding(buffer, (i - 1) * t->header.chunk_size);
+    unsigned new_size = trim_padding(buffer, t->header.chunk_size * (bytes > 0 ? i : (i - 1)));
 
     if (t->data != NULL)
         free(t->data);
@@ -226,11 +230,17 @@ static inline unsigned trim_padding(void *buffer, unsigned size)
 
     for (size--; size >= 0; size--)
     {
-        if (bytes[size] != 4)
+        if (bytes[size] != PAD)
             break;
     }
 
     return size + 1;
+}
+
+// Checks packet for containing padding bytes, and thereby is the last packet in transmission.
+static inline short contains_padding(void *restrict buffer, unsigned len)
+{
+    return ((char *) buffer)[len - 1] == PAD;
 }
 
 // Returns data.

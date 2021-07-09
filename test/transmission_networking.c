@@ -52,8 +52,8 @@ static void start_server(unsigned port, int (*assert)(void *))
 
         void *data = transmission_data(read);
 
-        if (assert != NULL && !assert(data))
-            write = init_transmission(client, "Assertion failed.", 17);
+        if (assert == NULL || !assert(data))
+            write = init_transmission(client, "Assertion failed", 17);
 
         else
             write = init_transmission(client, "Assertion success", 17);

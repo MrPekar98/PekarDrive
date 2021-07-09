@@ -5,8 +5,6 @@
 #include <PP/transmission.h>
 #include "transmission_networking.h"
 
-#include <stdio.h>
-
 #define DEFAULT_TRANS init_transmission((conn) {.error = 0, .fd = 1, .max_bytes = 1}, "Test", 4)
 
 void test_construction();
@@ -103,16 +101,17 @@ void test_transmission()
 
     assert(transmit(&t));
     sleep(5);
-    //assert(receive(&t));
 
+    int received = receive(&t);
     int error = t.error;
     stop_server(server);
     conn_close(&client);
+    assert(received);
     assert(!error);
 
-    //void *received_data = transmission_data(t);
-    //assert(received_data != NULL);
-    //assert_message(received_data;
+    void *received_data = transmission_data(t);
+    assert(received_data != NULL);
+    //assert(strcmp((char *) received_data, "Assertion success") == 0);
 
     close_transmission(&t);
 }
