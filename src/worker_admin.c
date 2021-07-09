@@ -6,6 +6,7 @@
 #include <comm.h>
 #include <PP/packet.h>
 #include <string.h>
+#include <signal.h>
 #include "util/logger.h"
 
 #define WORKER_READ_LEN 5000
@@ -49,6 +50,17 @@ pthread_t start_admin()
     pthread_create(&thread, NULL, manager_thread, NULL);
 
     return thread;
+}
+
+// Stops admin thread.
+void end_admin(pthread_t pid)
+{
+    int ret = pthread_kill(pid, -9);    // -9 is sigkill.
+
+#ifdef VERBOSE_1 || VERBOSE_2
+    if (ret != 0)
+        logger(ERROR, COMP_MASTER, "Could not kill admin thread.");
+#endif
 }
 
 // Thread for managing workers.

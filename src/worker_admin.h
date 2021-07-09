@@ -7,6 +7,7 @@
 void set_admin_update_time(unsigned time);
 unsigned get_admin_update_time();
 pthread_t start_admin();
+void end_admin(pthread_t pid);
 void add_worker(struct file_server worker);
 unsigned short worker_count();
 char *worker_ls();
