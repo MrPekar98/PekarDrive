@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
     if (!server_fd)
     {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
         logger(ERROR, COMP_WORKER, "Connection setup failed.");
 #endif
         return 1;
@@ -79,7 +79,7 @@ void *handle_client(void *arg)
 
     if (bytes <= 0)
     {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
         logger(ERROR, COMP_WORKER, "Error reading client.");
 #endif
         free(buffer);
@@ -94,7 +94,7 @@ void *handle_client(void *arg)
 
     if (p.token != MASTER_TKN)
     {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
         logger(WARNING, COMP_WORKER, "Message not from client.");
 #endif
         free(buffer);

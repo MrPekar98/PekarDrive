@@ -59,7 +59,7 @@ long fs_write_file(const char *file, const void *buffer, unsigned long size, sho
 
     if (f == NULL)
     {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
         logger(ERROR, COMP_DEFAULT, "Could not open file for writing of appending.");
 #endif
         return -1;
@@ -78,7 +78,7 @@ void *fs_read_file(const char *file)
 
     if (f == NULL)
     {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
         logger(ERROR, COMP_DEFAULT, "Could not open file for reading.");
 #endif
         return NULL;
