@@ -16,7 +16,7 @@ const void *ls(const char *host, unsigned short port)
 
     if (client.error)
     {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
         printf("%s\n", client.error_msg);
 #endif
         return NULL;
@@ -38,7 +38,7 @@ const void *file_read(const char *file_name, const char *host, unsigned short po
 
     if (client.error)
     {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
         printf("%s\n", client.error_msg);
 #endif
         return NULL;
@@ -75,7 +75,7 @@ size_t file_write(const char *file_name, const void *buffer, size_t len, short a
 
     if (client.error)
     {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
         printf("%s\n", client.error_msg);
 #endif
         return -1;
@@ -108,7 +108,7 @@ short file_delete(const char *file_name, const char *host, unsigned short port)
 
     if (client.error)
     {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
         printf("%s\n", client.error_msg);
 #endif
         return 0;

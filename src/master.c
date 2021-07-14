@@ -44,7 +44,7 @@ int main()
 
         if (client.error)
         {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
             logger(ERROR, COMP_MASTER, client.error_msg);
 #endif
             server_restart(&client, &master_fd);
@@ -90,7 +90,7 @@ void handle_client(conn client)
     {
         if (p.token != WORKER_TKN)
         {
-#ifdef VERBOSE_1 || VERBOSE_2
+#if defined(VERBOSE_1) || defined(VERBOSE_2)
             logger(WARNING, COMP_MASTER, "Non-worker attempted to register.");
 #endif
             free(buffer);
@@ -101,7 +101,7 @@ void handle_client(conn client)
         strcpy(worker.location.ip, parse_ip(p.arg));
         add_worker(worker);
 
-#ifdef VERBOSE_1 || VERBOSE_2
+#ifdef defined(VERBOSE_1) || defined(VERBOSE_2)
         char *msg = malloc(100);
         sprintf(msg, "Registered new worker (%d):\n%s:%d\n", worker.id, worker.location.ip, worker.location.port);
         logger(MESSAGE, COMP_MASTER, msg);
