@@ -4,7 +4,7 @@
 #ifdef DEBUG
 #define CONFIG_FILE "config"
 #else
-#define CONFIG_FILE "~/.pekar_drive/config"
+#define CONFIG_FILE "~/.PekarDrive/config"
 #endif
 
 void set_master_host(const char *host);

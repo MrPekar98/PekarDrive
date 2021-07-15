@@ -5,7 +5,7 @@
 #define WORKER_DIR "."
 #define MASTER_PORT get_dbg_port()
 #else
-#define WORKER_DIR "~/.pekar_drive"
+#define WORKER_DIR "~/.PekarDrive"
 #define MASTER_PORT get_port()
 #endif
 
