@@ -1,6 +1,5 @@
 #include <PP/pp.h>
 #include <assert.h>
-#include <string.h>
 #include "pp_test_server.h"
 
 void test_send_and_read();
@@ -23,5 +22,5 @@ void test_send_and_read()
 
     pp_message message = pp_read(server);
     assert(!message.status.error);
-    //assert(strcmp((char *) message.buffer, "Success") == 0);
+    assert(((char *) message.buffer)[0] == 'S');
 }
