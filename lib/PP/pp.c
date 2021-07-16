@@ -3,8 +3,6 @@
 #include <string.h>
 #include <PP/transmission.h>
 
-#include <stdio.h>
-
 // Makes connection from hostname and port number.
 pp_endpoint endpoint_from_address(const char *hostname, unsigned short port)
 {
@@ -22,15 +20,16 @@ pp_endpoint endpoint_from_connection(conn connection)
 pp_status pp_send(pp_endpoint endpoint, const void *data, size_t len)
 {
     transmission message = init_transmission(endpoint.connection, data, len);
+    pp_status status = {.error = 0, .error_message = NULL, .bytes = 0};
 
-    if (message.error)
+    if (message.error || !transmit(&message))
     {
         const char *error_msg = transmission_error(message);
-        pp_status status = {.error = 1, .error_message = malloc(strlen(error_msg)), .bytes = strlen(error_msg)};
+        status.error_message = malloc(strlen(error_msg));
+        status.bytes = strlen(error_msg);
+        status.error = 1;
         strcpy(status.error_message, error_msg);
         close_transmission(&message);
-
-        return status;
     }
 
     close_transmission(&message);
@@ -44,8 +43,6 @@ pp_message pp_read(pp_endpoint endpoint)
 
     if (!receive(&t))
     {
-        printf("Failure\n");
-
         pp_status status = {.error = 1, .error_message = NULL, .bytes = 0};
 
         if (t.error)
@@ -59,7 +56,6 @@ pp_message pp_read(pp_endpoint endpoint)
         return (pp_message) {.status = status, .buffer = NULL};
     }
 
-    printf("No failure\n");
     pp_message message = {.buffer = malloc(transmission_size(t))};
     memcpy(message.buffer, transmission_data(t), transmission_size(t));
     message.status = (pp_status) {.error = 0, .error_message = NULL, .bytes = 0};
