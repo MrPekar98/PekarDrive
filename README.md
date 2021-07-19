@@ -61,7 +61,7 @@ Delete a file with the following command:
 
 ### PekarDrive library
 
-The library comes with three headers used to interact with a master node. The header `interface.h` contains everything needed to interact with a master node. The header comes with the following declarations:
+The library comes with three headers used to interact with a master node. The header `interface.h` contains everything needed to interact with a master node. The header comes with the following functions:
 
 `const void *ls(const char *host, unsigned short port)`
 
@@ -73,7 +73,7 @@ The library comes with three headers used to interact with a master node. The he
 
 ## Master and Worker Setup
 
-Execute the following Makefile command to build a master and worker executable:
+Execute the following Makefile command to build a master and worker executable, including a client to interact with the master:
 
 `make MASTER_TKN=<MASTER_TOKEN> WORKER_TKN=<WORKER_TOKEN>`
 
@@ -81,4 +81,4 @@ Tokens are required to be assigned to the master and worker. The tokens must be 
 
 Note, it is important the master does not run on the same machine as any workers. If this is needed, change the globally used port number in lib/comm.c and src/server/boot.h before building an individual component.
 
-Also, if you have not downloaded a release, the project is compiled in debug mode. This means master and workers can run on the same machine and logging is enabled. TO disable debug mode and logging, remove `-DDEBUG` and `-DLOG` from the Makefile.
+Also, if you have not downloaded a release, the project is compiled in debug mode. To disable debug mode and logging, remove `-DDEBUG` and set to `-DVERBOSE_1` instead of `-DVERBOSE_2` from the Makefile.
